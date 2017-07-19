@@ -1,5 +1,11 @@
 import docker
 import time
+from dockerSensor import createReceiver
+from dockerSensor import printContainers
+from dockerSensor import stopContainers
+from dockerSensor import createProducer
+
+
 
 '''
 An application that will start synthetic sensors, and the corresponding receivers on the PI
@@ -11,17 +17,17 @@ Configs
 '''
 
 #configs for docker machine that will host the synthetic sensors
-producer_manager_docker_ip = '192.168.2.138'
+producer_manager_docker_ip = '10.12.7.42'
 producer_manager_docker_port = '2375'
 
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-receiver_manager_docker_ip = '192.168.2.138'
+#receiver_manager_docker_ip = '192.168.2.138'
+receiver_manager_docker_ip = '10.12.7.45'
 receiver_manager_docker_port = '2375'
 
 
 start_remote_port_range = 2000
-number_of_sensor_receiver_pairs = 50
-
+number_of_sensor_receiver_pairs = 2
 end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
 
 '''
@@ -33,46 +39,21 @@ producer_client = docker.DockerClient(base_url='tcp://'+producer_manager_docker_
 receiver_client = docker.DockerClient(base_url='tcp://'+receiver_manager_docker_ip+':'+receiver_manager_docker_port)
 
 
-#first remove all exited containers
 
+createReceiver(receiver_client,2000)
+time.sleep(20)
 
-#create new receiver client, verify its online then create a producer client, and verify that its online
+createProducer(producer_client,receiver_manager_docker_ip,2000,100,'0001')
 
-for port_num in range(start_remote_port_range,end_remote_port_range):
-    receiver_client.containers.run("brianr82/multinodered:latest",\
-                                   detach=True, ports= {'1880/tcp': port_num},\
-                                   environment={'FLOWS': 'sensor_flows.json'},\
-                                   name = 'recevier_'+ str(port_num)\
-                                   )
+printContainers(receiver_client)
+printContainers(producer_client)
 
-
-
-
-for container in receiver_client.containers.list(all):
-    print 'Created container\t' + container.name
-
-time.sleep(5)
-for container in receiver_client.containers.list(all):
-    print 'Stopping container\t' + container.name
-    container.stop()
-    container.remove()
+time.sleep(20)
 
 
 
 
-#Create to receiver client to create new receiver gateway
-
-
-
-
-
-
-
-
-
-
-#function create producer sensor
-
-#function create receiver  http endpoint
+stopContainers(receiver_client)
+stopContainers(producer_client)
 
 
