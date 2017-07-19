@@ -1,10 +1,11 @@
 
 import time
 
+
 def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip, port_num, NUM_MSG, SENSOR_ID):
 
     createReceiver(receiver_client,port_num)
-    time.sleep(10)
+    time.sleep(5)
     createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG,SENSOR_ID)
 
 
@@ -16,6 +17,8 @@ def createReceiver(receiver_client,port_num):
                                    environment={'FLOWS': 'sensor_flows.json'}, \
                                    name='receiver_' + str(port_num) \
                                    )
+    new_container = receiver_client.containers.get('receiver_' + str(port_num))
+    print 'Created Container\t' + new_container.name
 
 
 def createProducer(producer_client,PI_IP,PI_PORT,NUM_MSG,SENSOR_ID):
@@ -28,6 +31,8 @@ def createProducer(producer_client,PI_IP,PI_PORT,NUM_MSG,SENSOR_ID):
                                    'SENSOR_ID':'simsensor' + str(SENSOR_ID)}, \
                                    name='sensor_' + str(PI_PORT) \
                                    )
+    new_container = producer_client.containers.get('sensor_' + str(PI_PORT))
+    print 'Created Container\t' + new_container.name
 
 
 def printContainers(client_manager):
