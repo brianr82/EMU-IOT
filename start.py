@@ -1,9 +1,9 @@
 import docker
 import time
-from dockerSensor import createReceiver
+
 from dockerSensor import printContainers
 from dockerSensor import stopContainers
-from dockerSensor import createProducer
+from dockerSensor import createSensorPair
 
 
 
@@ -27,7 +27,7 @@ receiver_manager_docker_port = '2375'
 
 
 start_remote_port_range = 2000
-number_of_sensor_receiver_pairs = 2
+number_of_sensor_receiver_pairs = 10
 end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
 
 '''
@@ -40,16 +40,18 @@ receiver_client = docker.DockerClient(base_url='tcp://'+receiver_manager_docker_
 
 
 
-createReceiver(receiver_client,2000)
-time.sleep(20)
+i = 1
+for port_num in range(start_remote_port_range, end_remote_port_range):
+    createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,100,i)
+    i=i+1
 
-createProducer(producer_client,receiver_manager_docker_ip,2000,100,'0001')
 
 printContainers(receiver_client)
 printContainers(producer_client)
 
-time.sleep(20)
 
+print 'Starting Experiment'
+time.sleep(30)
 
 
 
