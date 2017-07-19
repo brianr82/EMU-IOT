@@ -46,8 +46,8 @@ for port_num in range(start_remote_port_range,end_remote_port_range):
                                    )
 
 
-#for image in producer_client.images.list():
-#    print (image.id + '\n')
+
+
 for container in receiver_client.containers.list(all):
     print 'Created container\t' + container.name
 
