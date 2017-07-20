@@ -31,7 +31,7 @@ receiver_manager_docker_port = '2375'
 
 
 start_remote_port_range = 2000
-number_of_sensor_receiver_pairs = 2
+number_of_sensor_receiver_pairs = 10
 end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
 
 '''
@@ -53,12 +53,14 @@ for port_num in range(start_remote_port_range, end_remote_port_range):
 
 
 print 'Starting Experiment'
-time.sleep(30)
+time.sleep(60)
 print 'End Experiment'
 
 
 
 stopContainers(receiver_client)
 stopContainers(producer_client)
+
+print '-----------------------------Done'
 
 
