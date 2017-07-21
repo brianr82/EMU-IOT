@@ -31,7 +31,7 @@ receiver_manager_docker_port = '2375'
 
 
 start_remote_port_range = 2000
-number_of_sensor_receiver_pairs = 10
+number_of_sensor_receiver_pairs = 5
 end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
 
 '''
@@ -44,7 +44,7 @@ receiver_client = docker.DockerClient(base_url='tcp://'+receiver_manager_docker_
 
 
 
-i = 1
+i = 0
 for port_num in range(start_remote_port_range, end_remote_port_range):
     createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,1000,i)
     i=i+1
@@ -57,9 +57,10 @@ time.sleep(60)
 print 'End Experiment'
 
 
-
 stopContainers(receiver_client)
 stopContainers(producer_client)
+
+
 
 print '-----------------------------Done'
 

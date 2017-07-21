@@ -6,7 +6,12 @@ def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,
 
     createReceiver(receiver_client,port_num)
     time.sleep(5)
-    createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG,SENSOR_ID)
+    for x in range(1,10):
+        createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG,str(x))
+
+
+
+
 
 
 def createReceiver(receiver_client,port_num):
@@ -28,10 +33,10 @@ def createProducer(producer_client,PI_IP,PI_PORT,NUM_MSG,SENSOR_ID):
                                    environment={'PI_IP': PI_IP, \
                                    'PI_PORT': PI_PORT,\
                                    'NUM_MSG': NUM_MSG, \
-                                   'SENSOR_ID':'simsensor' + str(SENSOR_ID)}, \
-                                   name='sensor_' + str(PI_PORT) \
+                                   'SENSOR_ID':'simsensor_' + str(PI_PORT) +"_"+ SENSOR_ID}, \
+                                   name='sensor_' + str(PI_PORT) +"_"+ SENSOR_ID \
                                    )
-    new_container = producer_client.containers.get('sensor_' + str(PI_PORT))
+    new_container = producer_client.containers.get('sensor_' + str(PI_PORT) +"_"+ SENSOR_ID)
     print 'Created Container\t' + new_container.name
 
 
