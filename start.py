@@ -22,17 +22,17 @@ Configs
 '''
 
 #configs for docker machine that will host the synthetic sensors
-producer_manager_docker_ip = '10.12.7.42'
+producer_manager_docker_ip = '10.0.2.15'
 producer_manager_docker_port = '2375'
 
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
 #receiver_manager_docker_ip = '192.168.2.138'
-receiver_manager_docker_ip = '10.12.7.45'
+receiver_manager_docker_ip = '192.168.0.246'
 receiver_manager_docker_port = '2375'
 
 
 
-kafka_manager_docker_ip = '10.12.7.35'
+kafka_manager_docker_ip = '142.150.208.238'
 kafka_manager_docker_port = '2375'
 
 
