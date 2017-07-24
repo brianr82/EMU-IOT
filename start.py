@@ -62,7 +62,7 @@ kafka_client = docker.DockerClient(base_url='tcp://'+kafka_manager_docker_ip+':'
 
 i = 0
 for port_num in range(start_remote_port_range, end_remote_port_range):
-    createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,1000,i)
+    createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,1000,i,2)
     i=i+1
     record = getDockerStats(kafka_client)
     append_record(record,'experimentstats1')
