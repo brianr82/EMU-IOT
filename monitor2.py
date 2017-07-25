@@ -16,6 +16,7 @@ class monitor2:
         self.previousCPU = 0.0
         self.previousSystem = 0.0
         self.exitFlag =True
+        self.resultFileName = ''
 
 
     def calculateCPUPercentUnix(self, jsondata):
@@ -103,7 +104,7 @@ class monitor2:
                         'net_send': str(throughput['tx_delta']), \
                         }]
 
-                    self.append_record(record,'experiments_stats_new')
+                    self.append_experiment_reading_record(record)
 
         return
 
@@ -113,13 +114,29 @@ class monitor2:
 
 
 
-    def append_record(self,record, filename):
+    def append_experiment_reading_record(self,record):
         #    with open('experimentstats', 'a') as f:
         #        json.dump(record, f)
         # f.write(os.linesep)
         keys = record[0].keys()
-        with open(filename, "a") as f:
+        with open(self.get_result_file_name(), "a") as f:
+
             dict_writer = DictWriter(f, keys, delimiter="\t")
-            # dict_writer.writeheader()
+            #dict_writer.writeheader()
             for value in record:
                 dict_writer.writerow(value)
+
+    def create_new_result_file(self,filename):
+        self.set_result_file_name(filename)
+        with open(self.get_result_file_name(), "a") as f:
+            f.write('----------------------------------------------------------------'+'\n')
+
+    def set_result_file_name(self, filename):
+        self.resultFileName = filename
+
+    def get_result_file_name(self):
+        return self.resultFileName
+
+
+
+
