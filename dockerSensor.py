@@ -5,8 +5,8 @@ import time
 def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip, port_num, NUM_MSG, SENSOR_ID,DELAY_SECONDS):
 
     createReceiver(receiver_client,port_num)
-    time.sleep(5)
-    for x in range(1,10):
+    time.sleep(10)
+    for x in range(1,3):
         createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG,str(x),DELAY_SECONDS)
 
 

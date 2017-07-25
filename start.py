@@ -1,8 +1,7 @@
 import docker
 import time
-from monitor import getDockerStats,append_record
-
-from dockerSensor import printContainers
+from monitor2 import monitor2
+from threading import Thread
 from dockerSensor import stopContainers
 from dockerSensor import createSensorPair
 
@@ -22,24 +21,18 @@ Configs
 '''
 
 #configs for docker machine that will host the synthetic sensors
-producer_manager_docker_ip = '10.0.2.15'
+producer_manager_docker_ip = '10.12.7.42'
 producer_manager_docker_port = '2375'
 
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-#receiver_manager_docker_ip = '192.168.2.138'
-receiver_manager_docker_ip = '192.168.0.246'
+
+receiver_manager_docker_ip = '10.12.7.45'
 receiver_manager_docker_port = '2375'
 
 
 
-kafka_manager_docker_ip = '142.150.208.238'
+kafka_manager_docker_ip = '10.12.7.35'
 kafka_manager_docker_port = '2375'
-
-
-
-
-
-
 
 
 
@@ -60,21 +53,53 @@ kafka_client = docker.DockerClient(base_url='tcp://'+kafka_manager_docker_ip+':'
 
 
 
+
+'''
+Start the monitors
+'''
+
+KafkaMonitor = monitor2(kafka_client)
+kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
+kafka_thread.start()
+
+ProducerMonitor = monitor2(producer_client)
+producerThread = Thread(target=ProducerMonitor.createNewMonitor)
+producerThread.start()
+
+
+print 'Monitors Started'
+
+
+
+'''
+Start the Producer and Receiver Containers
+'''
+
+
 i = 0
 for port_num in range(start_remote_port_range, end_remote_port_range):
-    createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,1000,i,2)
+    createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,1000,i,500000)
     i=i+1
-    record = getDockerStats(kafka_client)
-    append_record(record,'experimentstats1')
+    #record = getDockerStats(kafka_client)
+    #append_record(record,'experimentstats1')
+
 
 
 
 
 print 'Starting Experiment'
-time.sleep(60)
+time.sleep(20)
+
+
+
+
 print 'End Experiment'
 
+print 'Stopping Monitors'
+KafkaMonitor.stopMonitor()
+ProducerMonitor.stopMonitor()
 
+print 'Stopping Producers and Receivers'
 stopContainers(receiver_client)
 stopContainers(producer_client)
 
