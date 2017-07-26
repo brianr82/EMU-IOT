@@ -5,6 +5,7 @@ from monitor2 import *
 from threading import Thread
 from dockerSensor import stopContainers
 from dockerSensor import createSensorPair
+import sys
 
 #Run these on the respective docker machines
 # docker build --no-cache=true -f Dockerfile https://github.com/brianr82/sensorsim.git -t brianr82/sensorsim:latest
@@ -25,7 +26,7 @@ Configs
 producer_manager_docker_ip = '10.12.7.42'
 producer_manager_docker_port = '2375'
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-receiver_manager_docker_ip = '10.12.7.45'
+receiver_manager_docker_ip = '10.7.7.14'
 receiver_manager_docker_port = '2375'
 #configs for docker machine that will host the kafka cluster
 kafka_manager_docker_ip = '10.12.7.35'
@@ -52,22 +53,29 @@ Experiment Monitors
 Start the monitors
 '''
 
+experiment_tag = 'Run1'
 directory = 'ExperimentResults/'
 
 KafkaMonitor = monitor2(kafka_client)
-KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+'Exp1')
+KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
 kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
+
 kafka_thread.start()
 
+
 ProducerMonitor = monitor2(producer_client)
-ProducerMonitor.create_new_result_file(directory+'Producer_Readings_'+'Exp1')
+ProducerMonitor.create_new_result_file(directory+'Producer_Readings_'+experiment_tag)
 producerThread = Thread(target=ProducerMonitor.createNewMonitor)
+
 producerThread.start()
 
+
 Spark_Cassandra_Monitor = monitor2(spark_cassandra_client)
-Spark_Cassandra_Monitor.create_new_result_file(directory+'Spark_Cassandra_Readings_'+'Exp1')
+Spark_Cassandra_Monitor.create_new_result_file(directory+'Spark_Cassandra_Readings_'+ experiment_tag)
 Spark_Cassandra_Thread = Thread(target=Spark_Cassandra_Monitor.createNewMonitor)
+
 Spark_Cassandra_Thread.start()
+
 
 
 
@@ -89,32 +97,33 @@ Experiment Settings
 '''
 
 
-filename = 'FirstWorkloadRun'
+'''
+add 10 sensors
+'''
+def workloadA():
+    start_remote_port_range = 2000
+    number_of_sensor_receiver_pairs = 4
+    end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
 
+    number_of_msg_to_send = 10000
+    producer_device_delay = 500000
 
+    for port_num in range(start_remote_port_range, end_remote_port_range):
+        createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,number_of_msg_to_send,producer_device_delay,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor)
 
-start_remote_port_range = 2000
-number_of_sensor_receiver_pairs = 2
-end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
-
-
-i = 0
-for port_num in range(start_remote_port_range, end_remote_port_range):
-    createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,1000,i,500000)
-    i=i+1
-    #record = getDockerStats(kafka_client)
-    #append_record(record,'experimentstats1')
 
 
 
 
 
 print 'Starting Experiment'
-time.sleep(20)
+
+workloadA()
+#workloadB()
 
 
-
-
+experiment_run_time_seconds = 600
+time.sleep(experiment_run_time_seconds)
 print 'End Experiment'
 
 '''
@@ -129,19 +138,21 @@ ProducerMonitor.stopMonitor()
 Spark_Cassandra_Monitor.stopMonitor()
 
 
-
-print 'Stopping Producers and Receivers'
-stopContainers(receiver_client)
-stopContainers(producer_client)
-
 #wait for all threads to finish before ending the program
 kafka_thread.join()
 producerThread.join()
 Spark_Cassandra_Thread.join()
+
+time.sleep(10)
+print 'Stopping Producers and Receivers'
+stopContainers(receiver_client)
+stopContainers(producer_client)
+
+
 
 
 
 
 print '-----------------------------Done'
 
-
+sys.exit(0)

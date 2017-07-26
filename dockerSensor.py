@@ -2,12 +2,19 @@
 import time
 
 
-def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip, port_num, NUM_MSG, SENSOR_ID,DELAY_SECONDS):
+def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip, port_num, NUM_MSG,DELAY_SECONDS,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor):
 
     createReceiver(receiver_client,port_num)
-    time.sleep(10)
-    for x in range(1,3):
+    time.sleep(10)  #wait 10 seconds to let receiver initialize
+    for x in range(1,20): #create 20 producers
+        #update the active producer counts in each monitor
+        KafkaMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+        ProducerMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+        Spark_Cassandra_Monitor.set_active_producer_count(len(producer_client.containers.list(all)))
+
         createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG,str(x),DELAY_SECONDS)
+
+        time.sleep(10) # add a new producer every 10 seconds
 
 
 

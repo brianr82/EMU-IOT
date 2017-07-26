@@ -5,9 +5,6 @@ from csv import DictWriter
 
 
 class monitor2:
-
-
-
     def __init__(self, dockerClientToMonitor):
 
         self.dockerClientToMonitor = dockerClientToMonitor
@@ -15,9 +12,9 @@ class monitor2:
         self.previousTX = 0
         self.previousCPU = 0.0
         self.previousSystem = 0.0
-        self.exitFlag =True
+        self.exitFlag = True
         self.resultFileName = ''
-
+        self.ActiveProducers = 0
 
     def calculateCPUPercentUnix(self, jsondata):
         cpuPercent = 0.0
@@ -58,7 +55,7 @@ class monitor2:
 
     def createNewMonitor(self):
         while self.exitFlag:
-            time.sleep(10)
+            time.sleep(2)
             all_containers = self.dockerClientToMonitor.containers.list(all)
             for container in all_containers:
                 y = container.stats(decode=True, stream=False)
@@ -66,16 +63,18 @@ class monitor2:
                 r = json.dumps(y)
                 b = json.loads(r)
                 # b = json.loads(y, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
-                #print b
+                # print b
 
                 if self.previousCPU == 0.0:
                     # self.previousCPU = b.precpu_stats.cpu_usage.total_usage
                     self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
                 else:
                     print '----------------------------------------------------'
+                    print 'ResultFileName\t' + self.resultFileName
                     print 'Container count\t' + str(len(self.dockerClientToMonitor.containers.list(all)))
                     # print 'Read Timestamp\t' + b.read
                     print 'Read Timestamp\t' + b['read']
+                    print 'Active Producers\t' + str(self.ActiveProducers)
                     # print 'MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b.memory_stats.usage)) + ' ' + str(self.sizeof_fmt(b.memory_stats.limit))
                     print 'MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b['memory_stats']['usage'])) + ' ' + str(
                         self.sizeof_fmt(b['memory_stats']['limit']))
@@ -93,43 +92,45 @@ class monitor2:
                     self.previousRX = b['networks']['eth0']['rx_bytes']
                     self.previousTX = b['networks']['eth0']['tx_bytes']
 
-
-                    #Write Data to File
+                    # Write Data to File
                     record = [{
+                        'sensor_count': str(self.ActiveProducers),
                         'name': container.name,
-                        'timestamp': b['read'], \
-                        'cpu%': str(self.calculateCPUPercentUnix(b)), \
-                        'memory%': str(round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)), \
-                        'net_receive': str(throughput['rx_delta']), \
-                        'net_send': str(throughput['tx_delta']), \
+                        'timestamp': b['read'],
+                        'cpu%': str(self.calculateCPUPercentUnix(b)),
+                        'memory%': str(
+                            round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)),
+                        'net_receive': str(throughput['rx_delta']),
+                        'net_send': str(throughput['tx_delta']),
                         }]
 
-                    self.append_experiment_reading_record(record)
+                    #self.append_experiment_reading_record(record)
+
+                    keys = record[0].keys()
+                    with open(self.get_result_file_name(), "a") as f:
+                        dict_writer = DictWriter(f, keys, delimiter="\t")
+                        # dict_writer.writeheader()
+                        for value in record:
+                            dict_writer.writerow(value)
+
 
         return
-
 
     def stopMonitor(self):
         self.exitFlag = False
 
-
-
-    def append_experiment_reading_record(self,record):
-        #    with open('experimentstats', 'a') as f:
-        #        json.dump(record, f)
-        # f.write(os.linesep)
+    def append_experiment_reading_record(self, record):
         keys = record[0].keys()
         with open(self.get_result_file_name(), "a") as f:
-
             dict_writer = DictWriter(f, keys, delimiter="\t")
-            #dict_writer.writeheader()
+            # dict_writer.writeheader()
             for value in record:
                 dict_writer.writerow(value)
 
-    def create_new_result_file(self,filename):
+    def create_new_result_file(self, filename):
         self.set_result_file_name(filename)
-        with open(self.get_result_file_name(), "a") as f:
-            f.write('----------------------------------------------------------------'+'\n')
+        with open(self.get_result_file_name(), "w") as f:
+            f.write('----------------------------------------------------------------' + '\n')
 
     def set_result_file_name(self, filename):
         self.resultFileName = filename
@@ -137,6 +138,5 @@ class monitor2:
     def get_result_file_name(self):
         return self.resultFileName
 
-
-
-
+    def set_active_producer_count(self, count):
+        self.ActiveProducers = count
