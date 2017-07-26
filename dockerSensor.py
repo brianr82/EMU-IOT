@@ -51,6 +51,47 @@ def createProducer(producer_client,PI_IP,PI_PORT,NUM_MSG,SENSOR_ID,DELAY_SECONDS
     print 'Created Container\t' + new_container.name
 
 
+
+
+def createReceiverNew(receiver_client,receiver):
+
+    receiver_client.containers.run("brianr82/multinodered:latest", \
+                                   detach=True,\
+                                   ports={'1880/tcp': receiver.get_port_number()}, \
+                                   environment={'FLOWS': 'sensor_flows.json'}, \
+                                   name=receiver.get_receiver_name() \
+                                   )
+    new_container = receiver_client.containers.get(receiver.get_receiver_name())
+    print 'Created Container\t' + new_container.name
+
+
+def createProducerNew(producer_client,sensor_pair,NUM_MSG,DELAY_SECONDS):
+
+    producer_client.containers.run("brianr82/sensorsim:latest", \
+                                   detach=True,\
+                                   environment={'PI_IP': sensor_pair.get_receiver_ip(), \
+                                   'PI_PORT': sensor_pair.get_port_number(),\
+                                   'NUM_MSG': NUM_MSG, \
+                                   'SENSOR_ID':sensor_pair.get_producer_name(), \
+                                   'DELAY': DELAY_SECONDS}, \
+            name=sensor_pair.get_producer_name() \
+                                   )
+    new_container = producer_client.containers.get(sensor_pair.get_producer_name())
+    print 'Created Container\t' + new_container.name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def printContainers(client_manager):
     # print list of created containers
     for container in client_manager.containers.list(all):
