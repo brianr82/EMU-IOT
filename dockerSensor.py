@@ -2,17 +2,20 @@
 import time
 
 
-def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip, port_num, NUM_MSG,DELAY_SECONDS,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor):
+def createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip, port_num, NUM_MSG,DELAY_SECONDS,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor,PiMonitor):
 
     createReceiver(receiver_client,port_num)
     time.sleep(10)  #wait 10 seconds to let receiver initialize
-    for x in range(1,20): #create 20 producers
+    for x in range(1,5): #create 20 producers
         #update the active producer counts in each monitor
+        createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG, str(x), DELAY_SECONDS)
+
         KafkaMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
         ProducerMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
         Spark_Cassandra_Monitor.set_active_producer_count(len(producer_client.containers.list(all)))
+        PiMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
 
-        createProducer(producer_client, receiver_manager_docker_ip, port_num, NUM_MSG,str(x),DELAY_SECONDS)
+
 
         time.sleep(10) # add a new producer every 10 seconds
 
@@ -53,6 +56,16 @@ def printContainers(client_manager):
     for container in client_manager.containers.list(all):
         print 'Created container\t' + container.name
 
+
+def stopProducerContainers(client_manager,client_monitor_list):
+
+    # stop created containers
+    for container in client_manager.containers.list(all):
+        print 'Stopping container\t' + container.name
+        container.stop()
+        container.remove()
+        for monitor in client_monitor_list:
+            monitor.decrement_active_producer_count()
 
 def stopContainers(client_manager):
 

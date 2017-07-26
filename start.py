@@ -3,8 +3,10 @@ import time
 import datetime
 from monitor2 import *
 from threading import Thread
+from dockerSensor import stopProducerContainers
 from dockerSensor import stopContainers
 from dockerSensor import createSensorPair
+
 import sys
 
 #Run these on the respective docker machines
@@ -56,6 +58,14 @@ Start the monitors
 experiment_tag = 'Run1'
 directory = 'ExperimentResults/'
 
+
+PiMonitor = monitor2(receiver_client)
+PiMonitor.create_new_result_file(directory+'PiReadings_'+ experiment_tag)
+Pi_thread = Thread(target=PiMonitor.createNewMonitor)
+
+Pi_thread.start()
+
+
 KafkaMonitor = monitor2(kafka_client)
 KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
 kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
@@ -76,6 +86,14 @@ Spark_Cassandra_Thread = Thread(target=Spark_Cassandra_Monitor.createNewMonitor)
 
 Spark_Cassandra_Thread.start()
 
+
+
+Monitor_list = []
+
+Monitor_list.append(PiMonitor)
+Monitor_list.append(KafkaMonitor)
+Monitor_list.append(ProducerMonitor)
+Monitor_list.append(Spark_Cassandra_Monitor)
 
 
 
@@ -102,14 +120,14 @@ add 10 sensors
 '''
 def workloadA():
     start_remote_port_range = 2000
-    number_of_sensor_receiver_pairs = 4
+    number_of_sensor_receiver_pairs = 2
     end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
 
-    number_of_msg_to_send = 10000
-    producer_device_delay = 500000
+    number_of_msg_to_send = 1000
+    producer_device_delay = 5000000
 
     for port_num in range(start_remote_port_range, end_remote_port_range):
-        createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,number_of_msg_to_send,producer_device_delay,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor)
+        createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,number_of_msg_to_send,producer_device_delay,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor,PiMonitor)
 
 
 
@@ -122,7 +140,7 @@ workloadA()
 #workloadB()
 
 
-experiment_run_time_seconds = 600
+experiment_run_time_seconds = 60
 time.sleep(experiment_run_time_seconds)
 print 'End Experiment'
 
@@ -132,21 +150,27 @@ Clean up
 *****************************************************************************************************
 '''
 
+
+print 'Stopping Producers and Receivers'
+stopProducerContainers(producer_client,Monitor_list)
+stopContainers(receiver_client)
+
+time.sleep(10)
+
 print 'Stopping Monitors'
 KafkaMonitor.stopMonitor()
 ProducerMonitor.stopMonitor()
 Spark_Cassandra_Monitor.stopMonitor()
+PiMonitor.stopMonitor()
 
 
 #wait for all threads to finish before ending the program
 kafka_thread.join()
 producerThread.join()
 Spark_Cassandra_Thread.join()
+Pi_thread.join()
 
 time.sleep(10)
-print 'Stopping Producers and Receivers'
-stopContainers(receiver_client)
-stopContainers(producer_client)
 
 
 

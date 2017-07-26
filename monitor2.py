@@ -140,3 +140,6 @@ class monitor2:
 
     def set_active_producer_count(self, count):
         self.ActiveProducers = count
+
+    def decrement_active_producer_count(self):
+        self.ActiveProducers = self.ActiveProducers - 1
