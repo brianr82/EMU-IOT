@@ -55,7 +55,7 @@ class monitor2:
 
     def createNewMonitor(self):
         while self.exitFlag:
-            time.sleep(2)
+            time.sleep(5)
             all_containers = self.dockerClientToMonitor.containers.list(all)
             for container in all_containers:
                 y = container.stats(decode=True, stream=False)

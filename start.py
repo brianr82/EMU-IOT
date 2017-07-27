@@ -98,6 +98,12 @@ Monitor_list.append(ProducerMonitor)
 Monitor_list.append(Spark_Cassandra_Monitor)
 
 
+def update_monitor():
+    KafkaMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+    ProducerMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+    Spark_Cassandra_Monitor.set_active_producer_count(len(producer_client.containers.list(all)))
+    PiMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+
 
 
 
@@ -112,15 +118,8 @@ Main Program
 Start the Producer and Receiver Containers
 '''
 
-'''
-Experiment Settings
-'''
 
-
-'''
-add 10 sensors
-'''
-def workloadA():
+def workloadTest():
     start_remote_port_range = 2000
     number_of_sensor_receiver_pairs = 2
     end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
@@ -131,16 +130,32 @@ def workloadA():
     for port_num in range(start_remote_port_range, end_remote_port_range):
         createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,number_of_msg_to_send,producer_device_delay,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor,PiMonitor)
 
+'''
+Workload A ************************************************************************************************************
+'''
 
 
+
+
+
+
+
+
+
+
+
+
+'''
+Workload B ************************************************************************************************************
+'''
 
 def workloadB():
 
 
     sensor_pair_list = []
 
-    number_of_receivers = 2
-    number_of_sensors = 10
+    number_of_receivers = 5
+    number_of_sensors = 90
     number_of_sensors_assigned_to_receiver = number_of_sensors / number_of_receivers
 
     start_remote_port_range = 2000
@@ -165,33 +180,74 @@ def workloadB():
         time.sleep(5)
 
     time.sleep(10)
+
+
+
+
+
     '''
     Define workload profile below
     '''
     #create the producers as needed
 
-    number_of_msg_to_send = 1000
-    producer_device_delay = 5000000
+    number_of_msg_to_send = 3600
+    producer_device_delay = 1000000
 
-    for s_pair in sensor_pair_list:
-        createProducerNew(producer_client,s_pair,number_of_msg_to_send,producer_device_delay)
-        time.sleep(1)
-        KafkaMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
-        ProducerMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
-        Spark_Cassandra_Monitor.set_active_producer_count(len(producer_client.containers.list(all)))
-        PiMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+    #Step 1_A - Create sensor pairs in batches of 15 every 3 minutes for 18 minutes (sleep for 60 x 3 = 180 seconds)
 
-        #add new producer each second
+    pair_index = 0 #maintain the already created sensor pairs through all loop levels
+    for x in range(0,6): # creating 6 batches of 15 so we will have 90 sensors
+        for i in range(0,15):
+            new_sensor_pair = sensor_pair_list[pair_index]
+            createProducerNew(producer_client,new_sensor_pair,number_of_msg_to_send,producer_device_delay)
+            update_monitor()
+            pair_index +=1
+        #time.sleep(180) #wait 3 minutes(180 seconds) in between batches
+        time.sleep(10)
+
+    #Step 1_B
+    #stop the containers  in batches of 15 every 10 seconds
+    for x in range(0, 6):
+        stop_N_Producer_Containers(producer_client, Monitor_list,15)
+        # time.sleep(180) #wait 3 minutes(180 seconds) in between batches
         time.sleep(10)
 
 
-print 'Starting Experiment'
+
+    #Step 2_A Surge all 90 containers at once
+
+    for pair_index in range(0, len(sensor_pair_list)):  #
+        new_sensor_pair = sensor_pair_list[pair_index]
+        createProducerNew(producer_client, new_sensor_pair, number_of_msg_to_send, producer_device_delay)
+        update_monitor()
+
+        # time.sleep(180) #wait 3 minutes(180 seconds) in between batches
+        time.sleep(10)
+
+    #Step 2_B Stop 30 producers every 30 seconds
+
+    for x in range(0, 6):
+        stop_N_Producer_Containers(producer_client, Monitor_list,30)
+        time.sleep(180)
+
+
+
+
+
+
+'''
+End of Workload Profile B*****************************************************************************************
+'''
+'''
+Call the workloads ************************************************************************************************
+'''
+
 
 #workloadA()
 workloadB()
 
 
-experiment_run_time_seconds = 60
+experiment_run_time_seconds = 3600
 time.sleep(experiment_run_time_seconds)
 print 'End Experiment'
 
@@ -200,11 +256,9 @@ print 'End Experiment'
 Clean up
 *****************************************************************************************************
 '''
-
-
-print 'Stopping Producers and Receivers'
-stopProducerContainers(producer_client,Monitor_list)
+#kill the receivers after the experiment
 stopContainers(receiver_client)
+
 
 time.sleep(10)
 
