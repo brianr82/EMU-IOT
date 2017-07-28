@@ -57,7 +57,7 @@ Experiment Monitors
 Start the monitors
 '''
 
-experiment_tag = 'Run_1.5_second_vir'
+experiment_tag = 'Run_1_second_vir'
 directory = 'ExperimentResults/'
 
 
