@@ -30,7 +30,7 @@ Configs
 producer_manager_docker_ip = '10.12.7.42'
 producer_manager_docker_port = '2375'
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-receiver_manager_docker_ip = '10.7.7.14'
+receiver_manager_docker_ip = '10.12.7.45'
 receiver_manager_docker_port = '2375'
 #configs for docker machine that will host the kafka cluster
 kafka_manager_docker_ip = '10.12.7.35'

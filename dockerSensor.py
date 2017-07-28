@@ -74,7 +74,8 @@ def createProducerNew(producer_client,sensor_pair,NUM_MSG,DELAY_SECONDS):
                                    'NUM_MSG': NUM_MSG, \
                                    'SENSOR_ID':sensor_pair.get_producer_name(), \
                                    'DELAY': DELAY_SECONDS}, \
-            name=sensor_pair.get_producer_name() \
+                                    name=sensor_pair.get_producer_name(), \
+                                    remove=True\
                                    )
     new_container = producer_client.containers.get(sensor_pair.get_producer_name())
     print 'Created Container\t' + new_container.name
