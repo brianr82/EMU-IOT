@@ -109,7 +109,7 @@ class monitor2:
                     keys = record[0].keys()
                     with open(self.get_result_file_name(), "a") as f:
                         dict_writer = DictWriter(f, keys, delimiter="\t")
-                        # dict_writer.writeheader()
+                        #dict_writer.writeheader()
                         for value in record:
                             dict_writer.writerow(value)
 
@@ -123,7 +123,7 @@ class monitor2:
         keys = record[0].keys()
         with open(self.get_result_file_name(), "a") as f:
             dict_writer = DictWriter(f, keys, delimiter="\t")
-            # dict_writer.writeheader()
+            #dict_writer.writeheader()
             for value in record:
                 dict_writer.writerow(value)
 
