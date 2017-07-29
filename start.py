@@ -57,7 +57,7 @@ Experiment Monitors
 Start the monitors
 '''
 
-experiment_tag = 'Run_1_second_vir'
+experiment_tag = 'Run_half_second_vir'
 directory = 'ExperimentResults/'
 
 
@@ -192,8 +192,8 @@ def workloadB():
     '''
     #create the producers as needed
 
-    number_of_msg_to_send = 10000
-    producer_device_delay = 1000000
+    number_of_msg_to_send = 100000
+    producer_device_delay = 500000
 
     #Step 1_A - Create sensor pairs in batches of 15 every 3 minutes for 18 minutes (sleep for 60 x 3 = 180 seconds)
 
