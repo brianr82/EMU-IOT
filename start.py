@@ -57,7 +57,7 @@ Experiment Monitors
 Start the monitors
 '''
 
-experiment_tag = 'Run_half_second_vir'
+experiment_tag = 'Run_half_second_test'
 directory = 'ExperimentResults/'
 
 
@@ -156,6 +156,8 @@ def workloadB():
 
 
     scaling_factor = 5
+
+
     number_of_receivers = 5 * scaling_factor
     number_of_sensors = 90 * scaling_factor
     number_of_sensors_assigned_to_receiver = number_of_sensors / number_of_receivers

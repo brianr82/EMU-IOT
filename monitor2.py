@@ -19,9 +19,11 @@ class monitor2:
     def calculateCPUPercentUnix(self, jsondata):
         cpuPercent = 0.0
         # calculate the change for the cpu usage of the container in between readings
-        cpu_delta = float(jsondata['cpu_stats']['cpu_usage']['total_usage']) - float(self.previousCPU)
+        #cpu_delta = float(jsondata['cpu_stats']['cpu_usage']['total_usage']) - float(self.previousCPU)
+        cpu_delta = float(jsondata['cpu_stats']['cpu_usage']['total_usage']) - float(jsondata['precpu_stats']['cpu_usage']['total_usage'])
         # calculate the change for the entire system between readings
-        systemDelta = float(jsondata['cpu_stats']['system_cpu_usage']) - float(self.previousSystem)
+        #systemDelta = float(jsondata['cpu_stats']['system_cpu_usage']) - float(self.previousSystem)
+        systemDelta = float(jsondata['cpu_stats']['system_cpu_usage']) - float(jsondata['precpu_stats']['system_cpu_usage'])
 
         if systemDelta > 0.0 and cpu_delta > 0.0:
             cpuPercent = (cpu_delta / systemDelta) * 4 * 100.0
@@ -81,8 +83,9 @@ class monitor2:
                     print 'MEM %\t' + str(
                         round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2))
 
-                    self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
-                    self.previousSystem = b['precpu_stats']['system_cpu_usage']
+
+                    #self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
+                    #self.previousSystem = b['precpu_stats']['system_cpu_usage']
                     print 'CPU %\t' + str(self.calculateCPUPercentUnix(b))
 
                     throughput = self.calculateThroughput(b)
@@ -102,6 +105,11 @@ class monitor2:
                             round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)),
                         'net_receive': str(throughput['rx_delta']),
                         'net_send': str(throughput['tx_delta']),
+                        'memory_rss%': str(
+                            round(float(b['memory_stats']['stats']['rss']) / float(b['memory_stats']['limit']) * 100, 2)),
+                        'memory_active_anon%': str(
+                            round(float(b['memory_stats']['stats']['active_anon']) / float(b['memory_stats']['limit']) * 100,
+                                  2)),
                         }]
 
                     #self.append_experiment_reading_record(record)
@@ -109,7 +117,7 @@ class monitor2:
                     keys = record[0].keys()
                     with open(self.get_result_file_name(), "a") as f:
                         dict_writer = DictWriter(f, keys, delimiter="\t")
-                        #dict_writer.writeheader()
+                        dict_writer.writeheader()
                         for value in record:
                             dict_writer.writerow(value)
 
