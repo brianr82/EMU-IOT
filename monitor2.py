@@ -15,6 +15,7 @@ class monitor2:
         self.exitFlag = True
         self.resultFileName = ''
         self.ActiveProducers = 0
+        self.fileHeaderWritten = False
 
     def calculateCPUPercentUnix(self, jsondata):
         cpuPercent = 0.0
@@ -117,7 +118,9 @@ class monitor2:
                     keys = record[0].keys()
                     with open(self.get_result_file_name(), "a") as f:
                         dict_writer = DictWriter(f, keys, delimiter="\t")
-                        dict_writer.writeheader()
+                        if not self.fileHeaderWritten:
+                            dict_writer.writeheader()
+                            self.fileHeaderWritten = True
                         for value in record:
                             dict_writer.writerow(value)
 

@@ -60,7 +60,7 @@ def createReceiverNew(receiver_client,receiver):
                                    ports={'1880/tcp': receiver.get_port_number()}, \
                                    environment={'FLOWS': 'sensor_flows.json'}, \
                                    name=receiver.get_receiver_name() \
-                                   )
+                                  )
     new_container = receiver_client.containers.get(receiver.get_receiver_name())
     print 'Created Container\t' + new_container.name
 

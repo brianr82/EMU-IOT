@@ -27,16 +27,16 @@ Configs
 '''
 
 #configs for docker machine that will host the synthetic sensors
-producer_manager_docker_ip = '10.12.7.42'
+producer_manager_docker_ip = '10.12.7.3'
 producer_manager_docker_port = '2375'
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-receiver_manager_docker_ip = '10.12.7.45'
+receiver_manager_docker_ip = '10.12.7.40'
 receiver_manager_docker_port = '2375'
 #configs for docker machine that will host the kafka cluster
-kafka_manager_docker_ip = '10.12.7.35'
+kafka_manager_docker_ip = '10.12.7.41'
 kafka_manager_docker_port = '2375'
 #configs for docker machine that will host the spark_cassandra instances
-spark_cassandra_manager_docker_ip = '10.12.7.41'
+spark_cassandra_manager_docker_ip = '10.12.7.42'
 spark_cassandra_manager_docker_port = '2375'
 
 
@@ -57,7 +57,7 @@ Experiment Monitors
 Start the monitors
 '''
 
-experiment_tag = 'Run_half_second_test'
+experiment_tag = 'Run_1_second_test_a'
 directory = 'ExperimentResults/'
 
 
@@ -155,14 +155,14 @@ def workloadB():
     sensor_pair_list = []
 
 
-    scaling_factor = 5
+    scaling_factor = 1
 
 
     number_of_receivers = 5 * scaling_factor
     number_of_sensors = 90 * scaling_factor
     number_of_sensors_assigned_to_receiver = number_of_sensors / number_of_receivers
 
-    start_remote_port_range = 2000
+    start_remote_port_range = 3000
     end_remote_port_range = start_remote_port_range + number_of_receivers
 
     receiver_prefix = 'receiver_'
@@ -195,7 +195,7 @@ def workloadB():
     #create the producers as needed
 
     number_of_msg_to_send = 10000000
-    producer_device_delay = 500000
+    producer_device_delay = 1000000
 
     #Step 1_A - Create sensor pairs in batches of 15 every 3 minutes for 18 minutes (sleep for 60 x 3 = 180 seconds)
 
