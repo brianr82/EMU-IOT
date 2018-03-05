@@ -8,6 +8,7 @@ from dockerSensor import *
 from SensorPair import *
 from IoTNode import *
 from IoTNetwork import *
+from IoTLoadBalancer import *
 
 
 
@@ -55,23 +56,31 @@ spark_cassandra_client = docker.DockerClient(base_url='tcp://'+spark_cassandra_m
 #create a new IoT Network
 iot_network_1 = IoTNetwork('Primary_Network')
 
+#create a new Iot Loadbalancer and assign it to the new network
+iot_lb_1 = IoTLoadBalancer('LoadBalancer1',iot_network_1)
+
 #add nodes to the network
 #each node represents an instance of docker(i.e. a VM)
 iot_network_1.IoTNodeList.append(IoTNode('Application','Kafka01',kafka_client))
 iot_network_1.IoTNodeList.append(IoTNode('Application','SparkCassandra',spark_cassandra_client))
-iot_network_1.IoTNodeList.append(IoTNode('Sensor','Producer1',producer_client))
+iot_network_1.IoTNodeList.append(IoTNode('IoT_Device','Producer1',producer_client))
 iot_network_1.IoTNodeList.append(IoTNode('Gateway','Receiver1',receiver_client))
 
 
+#Cleanup Old Containers from previous experiments
+print 'IoT_Device Count  is ', iot_lb_1.get_current_iot_device_count()
 
-print 'Sensor Count  is ' , iot_network_1.get_current_sensor_count()
-#Cleanup Old Containers from perivous experiments
-print 'Checking and removing old virtual sensors and gateways.....'
-for i in iot_network_1.IoTNodeList:
+if iot_lb_1.get_current_iot_device_count() > 0:
+    print 'Found some lingering iot devices and gateways on the network.....'
+    print 'Now removing old virtual iot devices and gateways.....'
+    iot_lb_1.remove_all_iot_devices()
+    iot_lb_1.remove_all_gateways()
+    print 'After cleaning the iot device count is now ', iot_lb_1.get_current_iot_device_count()
+    print 'Environment is clean and ready to go.....'
+else:
+    print 'Environment is clean and ready to go.....'
 
-    if i.NodeType == 'Sensor' or i.NodeType  == 'Gateway':
 
-        stopAndRemoveContainers(i.NodeDockerRemoteClient)
 
 
 
@@ -132,8 +141,13 @@ def update_monitor():
         m.set_active_producer_count(len(producer_client.containers.list(all)))
 
 
+
+print '*********************************************************************************************************'
 print 'Starting New Experiment Session..........................................................................'
 print 'Monitors Started'
+print '*********************************************************************************************************'
+
+
 '''
 *****************************************************************************************************************
 Main Program

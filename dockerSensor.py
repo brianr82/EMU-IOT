@@ -86,7 +86,9 @@ def createProducerNew(producer_client,sensor_pair,NUM_MSG,DELAY_SECONDS):
 
 
 
-
+def getContainerCount(client_manager):
+    container_list = client_manager.containers.list(all)
+    return len(container_list)
 
 
 
