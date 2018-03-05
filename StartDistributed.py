@@ -7,6 +7,7 @@ from threading import Thread
 from dockerSensor import *
 from SensorPair import *
 from IoTNode import *
+from IoTNetwork import *
 
 
 
@@ -50,20 +51,26 @@ spark_cassandra_client = docker.DockerClient(base_url='tcp://'+spark_cassandra_m
 
 
 
-#Create IoTNode List - each node represents an instance of docker(i.e. a VM)
-IoTNodeList = []
 
-IoTNodeList.append(IoTNode('Application','Kafka01',kafka_client))
-IoTNodeList.append(IoTNode('Application','SparkCassandra',spark_cassandra_client))
-IoTNodeList.append(IoTNode('Sensor','Producer1',producer_client))
-IoTNodeList.append(IoTNode('Gateway','Receiver1',receiver_client))
+#create a new IoT Network
+iot_network_1 = IoTNetwork('Primary_Network')
+
+#add nodes to the network
+#each node represents an instance of docker(i.e. a VM)
+iot_network_1.IoTNodeList.append(IoTNode('Application','Kafka01',kafka_client))
+iot_network_1.IoTNodeList.append(IoTNode('Application','SparkCassandra',spark_cassandra_client))
+iot_network_1.IoTNodeList.append(IoTNode('Sensor','Producer1',producer_client))
+iot_network_1.IoTNodeList.append(IoTNode('Gateway','Receiver1',receiver_client))
 
 
+
+print 'Sensor Count  is ' , iot_network_1.get_current_sensor_count()
 #Cleanup Old Containers from perivous experiments
 print 'Checking and removing old virtual sensors and gateways.....'
-for i in IoTNodeList:
+for i in iot_network_1.IoTNodeList:
 
     if i.NodeType == 'Sensor' or i.NodeType  == 'Gateway':
+
         stopAndRemoveContainers(i.NodeDockerRemoteClient)
 
 
@@ -121,14 +128,11 @@ Monitor_list.append(Spark_Cassandra_Monitor)
 
 
 def update_monitor():
-    KafkaMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
-    ProducerMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
-    Spark_Cassandra_Monitor.set_active_producer_count(len(producer_client.containers.list(all)))
-    PiMonitor.set_active_producer_count(len(producer_client.containers.list(all)))
+    for m in Monitor_list:
+        m.set_active_producer_count(len(producer_client.containers.list(all)))
 
 
-
-
+print 'Starting New Experiment Session..........................................................................'
 print 'Monitors Started'
 '''
 *****************************************************************************************************************
