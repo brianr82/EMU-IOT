@@ -103,7 +103,7 @@ def stopAllProducerContainers(client_manager,client_monitor_list):
     # stop created containers
     for container in client_manager.containers.list(all):
         print 'Stopping container\t' + container.name
-        container.stop()
+        container.kill()
         container.remove()
         for monitor in client_monitor_list:
             monitor.decrement_active_producer_count()
@@ -128,10 +128,10 @@ def stop_N_Producer_Containers(client_manager,client_monitor_list,number_produce
             monitor.decrement_active_producer_count()
 
 
-def stopContainers(client_manager):
+def stopAndRemoveContainers(client_manager):
 
     # stop created containers
     for container in client_manager.containers.list(all):
         print 'Stopping container\t' + container.name
-        container.stop()
+        container.kill()
         container.remove()
