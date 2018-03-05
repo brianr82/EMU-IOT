@@ -124,6 +124,7 @@ def stop_N_Producer_Containers(client_manager,client_monitor_list,number_produce
     for x in range(0,number_producers_to_stop):
         container = container_list[x]
         print 'Stopping container\t' + container.name
+
         container.kill()
         container.remove()
         for monitor in client_monitor_list:
@@ -135,5 +136,9 @@ def stopAndRemoveContainers(client_manager):
     # stop created containers
     for container in client_manager.containers.list(all):
         print 'Stopping container\t' + container.name
-        container.kill()
-        container.remove()
+        if container.status != 'running':
+            container.remove()
+        else:
+            container.kill()
+            container.remove()
+

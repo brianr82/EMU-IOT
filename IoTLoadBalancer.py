@@ -20,7 +20,19 @@ class IoTLoadBalancer:
         for i in self.parent_IoTNetwork.IoTNodeList:
             if i.NodeType == 'IoT_Device':
                 container_list = i.NodeDockerRemoteClient.containers.list(all)
-                total_count = len(container_list)
+                total_count += len(container_list)
+                #print 'TEST:',total_count
+
+        return total_count
+
+
+    def get_current_iot_gateway_count(self):
+        total_count = 0
+
+        for i in self.parent_IoTNetwork.IoTNodeList:
+            if i.NodeType == 'Gateway':
+                container_list = i.NodeDockerRemoteClient.containers.list(all)
+                total_count += len(container_list)
 
         return total_count
 
@@ -48,6 +60,7 @@ class IoTLoadBalancer:
 
     def get_target_iot_device_edge(self, action):
 
+
         if self.distribution_policy == 'random':
             iot_device_node_list = []
             # if the action is to create we need to find IoT sensor nodes that can take it
@@ -61,7 +74,7 @@ class IoTLoadBalancer:
                 # choose one at random
                 selected_random_node = random.choice(iot_device_node_list)
                 selected_edge = selected_random_node
-
+                return selected_edge
             # if the action is to destroy at random we need to find any IoT sensor
             if action == 'destroy':
                 for node in self.parent_IoTNetwork.IoTNodeList:
@@ -71,9 +84,24 @@ class IoTLoadBalancer:
                 # choose one IoT node at random
                 selected_random_node = random.choice(iot_device_node_list)
                 selected_edge = selected_random_node
-
+                return selected_edge
         # to be implemented
         # if self.distribution_policy == 'balanced':
 
 
-        return selected_edge
+
+
+
+    def iot_network_cleanup(self):
+        print 'IoT_Device Count  is ', self.get_current_iot_device_count()
+        print 'IoT_Gateway Count  is ', self.get_current_iot_gateway_count()
+        if self.get_current_iot_device_count() > 0 or self.get_current_iot_gateway_count() > 0:
+            print 'Found some lingering iot devices and gateways on the network.....'
+            print 'Now removing old virtual iot devices and gateways.....'
+            self.remove_all_iot_devices()
+            self.remove_all_gateways()
+            print 'After cleaning the iot device count is now ', self.get_current_iot_device_count()
+            print 'After cleaning the iot gateway count is now ', self.get_current_iot_device_count()
+            print 'Environment is clean and ready to go.....'
+        else:
+            print 'Environment is clean and ready to go.....'
