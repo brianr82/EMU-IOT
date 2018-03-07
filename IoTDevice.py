@@ -1,9 +1,9 @@
-from IoTGateway import *
+from IoTVirtualGateway import *
 
-class IotTDevice:
-    def __init__(self,IoTDeviceID,IoTDeviceName,IoTGatewayBinding):
-        assert isinstance(IoTGatewayBinding, IoTGateway)
+class IoTDevice:
+    def __init__(self,IoTDeviceID,IoTDeviceName,IoTProducerBinding):
+        assert isinstance(IoTVirtualGatewayBinding, IoTVirtualGateway)
         self.IoTDeviceName = IoTDeviceName
         self.IoTDeviceID = IoTDeviceID
-        self.IoTGatewayBinding = IoTGatewayBinding
+        self.IoTVirtualGatewayBinding = IoTVirtualGatewayBinding
 

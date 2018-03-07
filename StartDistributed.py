@@ -9,6 +9,7 @@ from SensorPair import *
 from IoTNode import *
 from IoTNetwork import *
 from IoTLoadBalancer import *
+from IoTVirtualGateway import *
 import sys
 
 #Run these on the respective docker machines
@@ -64,10 +65,10 @@ iot_lb_1 = IoTLoadBalancer('LoadBalancer1',iot_network_1)
 #each node represents an instance of docker(i.e. a VM)
 iot_network_1.IoTNodeList.append(IoTNode('Application','Kafka01',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTNode('Application','SparkCassandra',spark_cassandra_client,spark_cassandra_manager_docker_ip,spark_cassandra_manager_docker_port))
-iot_network_1.IoTNodeList.append(IoTNode('IoT_Device','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
-iot_network_1.IoTNodeList.append(IoTNode('Gateway','IoTReceiver1',iot_gateway_client_1,iot_gateway_manager_docker_ip_1,iot_gateway_manager_docker_port_1))
-iot_network_1.IoTNodeList.append(IoTNode('IoT_Device','IoTProducer2',iot_producer_client_2,iot_producer_manager_docker_ip_2,iot_producer_manager_docker_port_2))
-iot_network_1.IoTNodeList.append(IoTNode('Gateway','IoTReceiver2',iot_gateway_client_2,iot_gateway_manager_docker_ip_2,iot_gateway_manager_docker_port_2))
+iot_network_1.IoTNodeList.append(IoTNode('IoT_Device_Host','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
+iot_network_1.IoTNodeList.append(IoTNode('IoT_Gateway_Host','IoTReceiver1',iot_gateway_client_1,iot_gateway_manager_docker_ip_1,iot_gateway_manager_docker_port_1))
+iot_network_1.IoTNodeList.append(IoTNode('IoT_Device_Host','IoTProducer2',iot_producer_client_2,iot_producer_manager_docker_ip_2,iot_producer_manager_docker_port_2))
+iot_network_1.IoTNodeList.append(IoTNode('IoT_Gateway_Host','IoTReceiver2',iot_gateway_client_2,iot_gateway_manager_docker_ip_2,iot_gateway_manager_docker_port_2))
 
 
 
@@ -186,10 +187,34 @@ Workload A *********************************************************************
 Workload Distributed***************************************************************************************************
 '''
 
-#Step 1: Create the receivers
-#Step 2:
 
 
+
+
+def workloadDist():
+    # Step 1: Create the virtual gateways
+    scaling_factor = 1
+
+    number_of_receivers = 5 * scaling_factor
+    number_of_sensors = 90 * scaling_factor
+    number_of_sensors_assigned_to_receiver = number_of_sensors / number_of_receivers
+
+    start_remote_port_range = 3000
+    end_remote_port_range = start_remote_port_range + number_of_receivers
+
+
+
+    gateway_list = iot_lb_1.getVirtualGatewayList()
+
+    for gateway in gateway_list:
+        receiver_prefix = gateway.NodeName + '_'
+
+        for port_number in range(start_remote_port_range, end_remote_port_range):
+            new_iotgateway = IoTVirtualGateway(receiver_prefix + str(port_number),port_number,25,gateway.NodeDockerRemoteClient)
+            new_iotgateway.createIoTVirtualGateway()
+
+
+    # Step 2: Create the virtual sensors
 
 
 
@@ -293,9 +318,9 @@ Call the workloads *************************************************************
 '''
 
 
-#workloadA()
-workloadB()
 
+#workloadB()
+workloadDist()
 
 
 

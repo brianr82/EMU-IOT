@@ -18,7 +18,7 @@ class IoTLoadBalancer:
         total_count = 0
 
         for i in self.parent_IoTNetwork.IoTNodeList:
-            if i.NodeType == 'IoT_Device':
+            if i.NodeType == 'IoT_Device_Host':
                 container_list = i.NodeDockerRemoteClient.containers.list(all)
                 total_count += len(container_list)
                 #print 'TEST:',total_count
@@ -30,23 +30,31 @@ class IoTLoadBalancer:
         total_count = 0
 
         for i in self.parent_IoTNetwork.IoTNodeList:
-            if i.NodeType == 'Gateway':
+            if i.NodeType == 'IoT_Gateway_Host':
                 container_list = i.NodeDockerRemoteClient.containers.list(all)
                 total_count += len(container_list)
 
         return total_count
 
+    def getVirtualGatewayList(self):
+        virtual_iot_gateway_node_list = []
+        for node in self.parent_IoTNetwork.IoTNodeList:
+            if node.NodeType == 'IoT_Gateway_Host':
+                virtual_iot_gateway_node_list.append(node)
+        return virtual_iot_gateway_node_list
+
+
 
     def remove_all_iot_devices(self):
         for i in self.parent_IoTNetwork.IoTNodeList:
 
-            if i.NodeType == 'IoT_Device':
+            if i.NodeType == 'IoT_Device_Host':
                 stopAndRemoveContainers(i.NodeDockerRemoteClient)
 
 
     def remove_all_gateways(self):
         for i in self.parent_IoTNetwork.IoTNodeList:
-            if i.NodeType == 'Gateway':
+            if i.NodeType == 'IoT_Gateway_Host':
                 stopAndRemoveContainers(i.NodeDockerRemoteClient)
 
 
@@ -58,17 +66,17 @@ class IoTLoadBalancer:
         self.set_distribution_policy_random = 'random'
 
 
+
     def get_target_iot_device_edge(self, action):
 
 
         if self.distribution_policy == 'random':
             iot_device_node_list = []
-            # if the action is to create we need to find IoT sensor nodes that can take it
+            # if the action is to create we need to find IoT producer node that can take it
             if action == 'create':
                 for node in self.parent_IoTNetwork.IoTNodeList:
                     # check to see if the node is less than the max the edge can handle
-                    if node.NodeType == 'IoT_Device' and getContainerCount(
-                            node.NodeDockerRemoteClient) < self.max_iot_devices_per_edge:
+                    if node.NodeType == 'IoT_Device_Host' and getContainerCount(node.NodeDockerRemoteClient) < self.max_iot_devices_per_edge:
                         iot_device_node_list.append(node)
 
                 # choose one at random
@@ -79,7 +87,7 @@ class IoTLoadBalancer:
             if action == 'destroy':
                 for node in self.parent_IoTNetwork.IoTNodeList:
                     # check to see if the node has at least one sensor on it, if it does add it to the list of choices
-                    if node.NodeType == 'IoT_Device' and getContainerCount(node.NodeDockerRemoteClient) > 0:
+                    if node.NodeType == 'IoT_Device_Host' and getContainerCount(node.NodeDockerRemoteClient) > 0:
                         iot_device_node_list.append(node)
                 # choose one IoT node at random
                 selected_random_node = random.choice(iot_device_node_list)
