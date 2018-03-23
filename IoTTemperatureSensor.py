@@ -3,12 +3,15 @@ from IoTDevice import *
 
 
 class IotTemperatureSensor(IoTDevice):
-
-    #get the ip address of the gateway that is bound to the producer host
-    destination_gateway_ip  = self.IoTProducerBinding.boundNode.NodeDockerRemoteClient
+    def __init__(self):
+        #IoTDevice.__init__ (self,self.IoTDeviceID,self.IoTDeviceName,self.IoTProducerBinding)
+        #get the ip address of the gateway that is bound to the producer host
+        self.destination_gateway_ip = self.IoTProducerBinding.boundNode.NodeDockerRemoteClient
+        #get the port number for the  a virtual gateway
+        self.destination_gateway_port =
 
     def createIoTVirtualTemperatureSensor(self):
-        self.TargetProducerHost.containers.run("brianr82/sensorsim:latest", \
+        self.IoTProducerBinding.containers.run("brianr82/sensorsim:latest", \
                                            detach=True, \
                                            environment={'PI_IP': self.destination_gateway_ip, \
                                                         'PI_PORT': sensor_pair.get_port_number(), \

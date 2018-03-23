@@ -43,6 +43,14 @@ class IoTLoadBalancer:
                 virtual_iot_gateway_node_list.append(node)
         return virtual_iot_gateway_node_list
 
+    def getNextAvailableVirtualGateway(self,ProducerIoTNode):
+        #check if the IOT is a producer host
+        if ProducerIoTNode.NodeType == 'IoT_Device_Host':
+        #1. Lookup the Gateway Node
+            gateway_IoT_node = ProducerIoTNode.boundNode
+
+
+
 
 
     def remove_all_iot_devices(self):
