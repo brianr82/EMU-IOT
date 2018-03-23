@@ -12,7 +12,7 @@ class IoTLoadBalancer:
 
         assert isinstance(parent_iot_network, IoTNetwork)
         self.parent_IoTNetwork = parent_iot_network
-        self.balencer_name = balancer_name
+        self.balancer_name = balancer_name
         self.distribution_policy = 'random'
         self.max_iot_devices_per_edge = 500
 
@@ -39,7 +39,7 @@ class IoTLoadBalancer:
 
         return total_count
 
-    def getVirtualGatewayList(self):
+    def getIoTHostGatewayList(self):
         virtual_iot_gateway_node_list = []
         for node in self.parent_IoTNetwork.IoTNodeList:
             if isinstance (node, IoTGatewayHost):

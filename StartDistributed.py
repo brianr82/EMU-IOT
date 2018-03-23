@@ -207,14 +207,20 @@ def workloadDist():
 
 
 
-    gateway_list = iot_lb_1.getVirtualGatewayList()
+    host_gateway_list = iot_lb_1.getIoTHostGatewayList()
 
-    for gateway in gateway_list:
+    for gateway in host_gateway_list:
         receiver_prefix = gateway.NodeName + '_'
 
         for port_number in range(start_remote_port_range, end_remote_port_range):
+            #create the object
             new_iotgateway = IoTVirtualGateway(receiver_prefix + str(port_number),port_number,25,gateway.NodeDockerRemoteClient)
+            #create the actual docker container
             new_iotgateway.createIoTVirtualGateway()
+            #register the  virtual gateway on the gateway host
+            gateway.addVirtualGateway(new_iotgateway)
+
+
 
 
     # Step 2: Create the virtual sensors
