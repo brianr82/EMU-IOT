@@ -1,6 +1,9 @@
 import docker
 import time
 import datetime
+
+from IoTProducerHost import *
+from IoTGatewayHost import *
 from receiver import *
 from monitor2 import *
 from threading import Thread
@@ -65,10 +68,10 @@ iot_lb_1 = IoTLoadBalancer('LoadBalancer1',iot_network_1)
 #each node represents an instance of docker(i.e. a VM)
 iot_network_1.IoTNodeList.append(IoTNode('Application','Kafka01',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTNode('Application','SparkCassandra',spark_cassandra_client,spark_cassandra_manager_docker_ip,spark_cassandra_manager_docker_port))
-iot_network_1.IoTNodeList.append(IoTNode('IoT_Device_Host','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
-iot_network_1.IoTNodeList.append(IoTNode('IoT_Gateway_Host','IoTReceiver1',iot_gateway_client_1,iot_gateway_manager_docker_ip_1,iot_gateway_manager_docker_port_1))
-iot_network_1.IoTNodeList.append(IoTNode('IoT_Device_Host','IoTProducer2',iot_producer_client_2,iot_producer_manager_docker_ip_2,iot_producer_manager_docker_port_2))
-iot_network_1.IoTNodeList.append(IoTNode('IoT_Gateway_Host','IoTReceiver2',iot_gateway_client_2,iot_gateway_manager_docker_ip_2,iot_gateway_manager_docker_port_2))
+iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
+iot_network_1.IoTNodeList.append(IoTGatewayHost('IoT_Gateway_Host','IoTReceiver1',iot_gateway_client_1,iot_gateway_manager_docker_ip_1,iot_gateway_manager_docker_port_1))
+iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer2',iot_producer_client_2,iot_producer_manager_docker_ip_2,iot_producer_manager_docker_port_2))
+iot_network_1.IoTNodeList.append(IoTGatewayHost('IoT_Gateway_Host','IoTReceiver2',iot_gateway_client_2,iot_gateway_manager_docker_ip_2,iot_gateway_manager_docker_port_2))
 
 
 
