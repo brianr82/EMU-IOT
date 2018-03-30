@@ -1,7 +1,7 @@
 from IoTNetwork import *
 import IoTNode
-import IoTGatewayHost
-import IoTProducerHost
+from IoTGatewayHost import IoTGatewayHost
+from IoTProducerHost import IoTProducerHost
 from dockerSensor import stopAndRemoveContainers
 from dockerSensor import getContainerCount
 import random

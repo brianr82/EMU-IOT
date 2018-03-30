@@ -2,18 +2,20 @@ import docker
 import time
 import datetime
 
-from IoTProducerHost import *
-from IoTGatewayHost import *
+
+from IoTNode import *
+
+from IoTApplicationHost import *
 from receiver import *
 from monitor2 import *
 from threading import Thread
 from dockerSensor import *
 from SensorPair import *
-from IoTNode import *
 from IoTNetwork import *
 from IoTLoadBalancer import *
 from IoTVirtualGateway import *
 import sys
+
 
 #Run these on the respective docker machines
 # docker build --no-cache=true -f Dockerfile https://github.com/brianr82/sensorsim.git -t brianr82/sensorsim:latest
@@ -24,15 +26,15 @@ Configs
 '''
 
 #configs for docker machine that will host the synthetic iot devices
-iot_producer_manager_docker_ip_1 = '10.12.7.3'
+iot_producer_manager_docker_ip_1 = '192.168.2.240'
 iot_producer_manager_docker_port_1 = '2375'
-iot_producer_manager_docker_ip_2 = '10.12.7.43'
+iot_producer_manager_docker_ip_2 = '192.168.2.241'
 iot_producer_manager_docker_port_2 = '2375'
 
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-iot_gateway_manager_docker_ip_1 = '10.12.7.40'
+iot_gateway_manager_docker_ip_1 = '192.168.2.242'
 iot_gateway_manager_docker_port_1 = '2375'
-iot_gateway_manager_docker_ip_2 = '10.12.7.45'
+iot_gateway_manager_docker_ip_2 = '192.168.2.243'
 iot_gateway_manager_docker_port_2 = '2375'
 
 
@@ -66,8 +68,8 @@ iot_lb_1 = IoTLoadBalancer('LoadBalancer1',iot_network_1)
 
 #add nodes to the network
 #each node represents an instance of docker(i.e. a VM)
-iot_network_1.IoTNodeList.append(IoTNode('Application','Kafka01',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
-iot_network_1.IoTNodeList.append(IoTNode('Application','SparkCassandra',spark_cassandra_client,spark_cassandra_manager_docker_ip,spark_cassandra_manager_docker_port))
+iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Kafka01',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
+iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','SparkCassandra',spark_cassandra_client,spark_cassandra_manager_docker_ip,spark_cassandra_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
 iot_network_1.IoTNodeList.append(IoTGatewayHost('IoT_Gateway_Host','IoTReceiver1',iot_gateway_client_1,iot_gateway_manager_docker_ip_1,iot_gateway_manager_docker_port_1))
 iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer2',iot_producer_client_2,iot_producer_manager_docker_ip_2,iot_producer_manager_docker_port_2))
@@ -206,18 +208,18 @@ def workloadDist():
     end_remote_port_range = start_remote_port_range + number_of_receivers
 
 
-
+    #get list of all IotGatewayHostNodes (ie Vm's that can host VirtualIotGateway's)
     host_gateway_list = iot_lb_1.getIoTHostGatewayList()
 
     for gateway in host_gateway_list:
         receiver_prefix = gateway.NodeName + '_'
 
         for port_number in range(start_remote_port_range, end_remote_port_range):
-            #create the object
+            #create the each virtual gateway
             new_iotgateway = IoTVirtualGateway(receiver_prefix + str(port_number),port_number,25,gateway.NodeDockerRemoteClient)
             #create the actual docker container
             new_iotgateway.createIoTVirtualGateway()
-            #register the  virtual gateway on the gateway host
+            #register the  virtual gateway to the physical gateway host
             gateway.addVirtualGateway(new_iotgateway)
 
 
@@ -343,11 +345,6 @@ time.sleep(experiment_run_time_seconds)
 print 'End Experiment'
 
 
-#kill the receivers after the experiment
-stopAndRemoveContainers(receiver_client)
-
-
-time.sleep(10)
 
 print 'Stopping Monitors'
 KafkaMonitor.stopMonitor()
@@ -361,6 +358,15 @@ kafka_thread.join()
 producerThread.join()
 Spark_Cassandra_Thread.join()
 Pi_thread.join()
+
+time.sleep(10)
+
+
+
+
+#kill the receivers after the experiment
+stopAndRemoveContainers(receiver_client)
+
 
 time.sleep(10)
 

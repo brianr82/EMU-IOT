@@ -24,7 +24,7 @@ class IoTVirtualGateway:
         assert isinstance(IoTDeviceToBeAdded,IoTDevice)
         #Step 2. Check if there is room on this gateway to add one
         if self.checkIfRoomtoAddDevice() == True:
-            self.connectedIoTDevices.append (IoTDeviceToBeAdded)
+            self.connectedIoTDevices.append(IoTDeviceToBeAdded)
             self.current_iot_devices_connected = self.current_iot_devices_connected + 1
 
 
