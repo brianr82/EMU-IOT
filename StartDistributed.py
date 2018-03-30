@@ -14,6 +14,7 @@ from SensorPair import *
 from IoTNetwork import *
 from IoTLoadBalancer import *
 from IoTVirtualGateway import *
+from IoTTemperatureSensor import *
 import sys
 
 
@@ -227,7 +228,20 @@ def workloadDist():
 
     # Step 2: Create the virtual sensors
 
+    producer_prefix = 'simsensor_'
+    number_of_msg_to_send = 10000000
+    producer_device_delay = 1000000
 
+
+    destination_producer_host = iot_lb_1.get_target_iot_device_edge('create')
+    IoTDeviceID =  'test'
+    IoTDeviceName = producer_prefix + str(destination_producer_host.boundNode.getNextFreeVirtualGateway().gateway_app_port)
+    IoTProducerBinding = destination_producer_host
+
+
+    first_sensor = IotTemperatureSensor(IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay)
+
+    first_sensor.createIoTVirtualTemperatureSensor()
 
 
 '''
