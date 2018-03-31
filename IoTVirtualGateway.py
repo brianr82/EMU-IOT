@@ -1,12 +1,12 @@
-import IoTDevice
+from IoTDevice import *
 
 class IoTVirtualGateway:
-    def __init__(self, gateway_name, gateway_app_port,max_number_iot_devices_supported,IoTGatwayHostClient):
+    def __init__(self, gateway_name, gateway_app_port,max_number_iot_devices_supported,IoTGatwayHost):
         self.gateway_name = gateway_name
         self.gateway_app_port = gateway_app_port
         self.max_number_iot_devices_supported = max_number_iot_devices_supported
         self.current_iot_devices_connected = 0
-        self.IoTGatewayHostClient = IoTGatwayHostClient
+        self.IoTGatewayHostClient = IoTGatwayHost.NodeDockerRemoteClient
         self.connectedIoTDevices = []
 
     def createIoTVirtualGateway(self):
@@ -14,9 +14,9 @@ class IoTVirtualGateway:
                                        detach=True, \
                                        ports={'1880/tcp': self.gateway_app_port}, \
                                        environment={'FLOWS': 'sensor_flows.json'}, \
-                                       name='receiver_' + str(self.gateway_app_port) \
+                                       name=self.gateway_name \
                                        )
-        new_container = self.IoTGatewayHostClient.containers.get('receiver_' + str(self.gateway_app_port))
+        new_container = self.IoTGatewayHostClient.containers.get(self.gateway_name)
         print 'Created Container\t' + new_container.name
 
     def add_iot_device(self,IoTDeviceToBeAdded):

@@ -1,4 +1,5 @@
 from IoTDevice import *
+from IoTProducerHost import *
 
 
 
@@ -13,7 +14,7 @@ class IotTemperatureSensor(IoTDevice):
         self.producer_device_delay = 1000000
 
     def createIoTVirtualTemperatureSensor(self):
-        self.IoTProducerBinding.containers.run("brianr82/sensorsim:latest", \
+        self.IoTProducerBinding.NodeDockerRemoteClient.containers.run("brianr82/sensorsim:latest", \
                                            detach=True, \
                                            environment={'PI_IP': self.destination_gateway_ip, \
                                                         'PI_PORT': self.destination_virtual_gateway_port, \
@@ -22,5 +23,6 @@ class IotTemperatureSensor(IoTDevice):
                                                         'DELAY': self.producer_device_delay}, \
                                            name=self.IoTDeviceName \
                                            )
-        new_container = self.TargetProducerHost.containers.get(self.IoTDeviceName)
+        new_container = self.IoTProducerBinding.NodeDockerRemoteClient.containers.get(self.IoTDeviceName)
         print 'Created Container\t' + new_container.name
+

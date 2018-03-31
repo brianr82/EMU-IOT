@@ -217,7 +217,7 @@ def workloadDist():
 
         for port_number in range(start_remote_port_range, end_remote_port_range):
             #create the each virtual gateway
-            new_iotgateway = IoTVirtualGateway(receiver_prefix + str(port_number),port_number,25,gateway.NodeDockerRemoteClient)
+            new_iotgateway = IoTVirtualGateway(receiver_prefix + '_receiver_' + str(port_number),port_number,5,gateway)
             #create the actual docker container
             new_iotgateway.createIoTVirtualGateway()
             #register the  virtual gateway to the physical gateway host
@@ -227,21 +227,30 @@ def workloadDist():
 
 
     # Step 2: Create the virtual sensors
-
-    producer_prefix = 'simsensor_'
-    number_of_msg_to_send = 10000000
-    producer_device_delay = 1000000
+    createNewSensor(7)
 
 
-    destination_producer_host = iot_lb_1.get_target_iot_device_edge('create')
-    IoTDeviceID =  'test'
-    IoTDeviceName = producer_prefix + str(destination_producer_host.boundNode.getNextFreeVirtualGateway().gateway_app_port)
-    IoTProducerBinding = destination_producer_host
+def createNewSensor(count):
 
 
-    first_sensor = IotTemperatureSensor(IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay)
+    for producer_seq in range (1, count):
 
-    first_sensor.createIoTVirtualTemperatureSensor()
+        producer_prefix = 'simsensor_' + str(producer_seq) +'_'
+        number_of_msg_to_send = 10000000
+        producer_device_delay = 1000000
+
+
+        destination_producer_host = iot_lb_1.get_target_iot_device_edge('create')
+        IoTDeviceID =  'test'
+        IoTDeviceName = destination_producer_host.NodeName + '_' +producer_prefix + str(destination_producer_host.boundNode.getNextFreeVirtualGateway().gateway_app_port)
+        IoTProducerBinding = destination_producer_host
+
+
+        new_sensor = IotTemperatureSensor(IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay)
+
+        new_sensor.createIoTVirtualTemperatureSensor()
+
+        IoTProducerBinding.addVirtualIoTDevice(new_sensor)
 
 
 '''
@@ -379,8 +388,8 @@ time.sleep(10)
 
 
 #kill the receivers after the experiment
-stopAndRemoveContainers(receiver_client)
-
+#stopAndRemoveContainers(receiver_client)
+iot_lb_1.remove_all_gateways()
 
 time.sleep(10)
 
