@@ -13,7 +13,7 @@ from IoTDockerController import *
 from SensorPair import *
 from IoTNetwork import *
 from IoTLoadBalancer import *
-from IoTVirtualGateway import *
+from IoTTemperatureGateway import *
 from IoTTemperatureSensor import *
 import sys
 
@@ -213,16 +213,18 @@ def workloadDist():
     #get list of all IotGatewayHostNodes (ie Vm's that can host VirtualIotGateway's)
     host_gateway_list = iot_lb_1.getIoTHostGatewayList()
 
-    for gateway in host_gateway_list:
-        receiver_prefix = gateway.NodeName + '_'
+    max_number_iot_devices_supported_in_virtual_gateway =5
+
+    for gateway_host in host_gateway_list:
+        receiver_prefix = gateway_host.NodeName + '_'
 
         for port_number in range(start_remote_port_range, end_remote_port_range):
             #create the each virtual gateway
-            new_iotgateway = IoTVirtualGateway(receiver_prefix + '_receiver_' + str(port_number),port_number,5,gateway)
+            new_iot_temperature_gateway = IoTTemperatureGateway(receiver_prefix + '_receiver_' + str(port_number),port_number,max_number_iot_devices_supported_in_virtual_gateway,gateway_host)
             #create the actual docker container
-            new_iotgateway.createIoTVirtualGateway()
+            new_iot_temperature_gateway.createIoTVirtualGateway()
             #register the  virtual gateway to the physical gateway host
-            gateway.addVirtualGateway(new_iotgateway)
+            gateway_host.addVirtualGateway(new_iot_temperature_gateway)
 
 
 
@@ -249,9 +251,9 @@ def createNewSensor(count):
 
 
 
-        new_sensor = IotTemperatureSensor(IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay)
+        new_sensor = IoTTemperatureSensor(IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay)
 
-        new_sensor.createIoTVirtualTemperatureSensor()
+        new_sensor.createVirtualIoTSensor()
 
         #add device to producer host
         IoTProducerBinding.addVirtualIoTDevice(new_sensor,BoundIoTVirtualGateway)
