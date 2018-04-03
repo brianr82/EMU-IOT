@@ -1,5 +1,5 @@
 from IoTNode import *
-from IoTVirtualGateway import *
+#from IoTVirtualGateway import *
 
 class IoTDevice:
     def __init__(self,IoTDeviceID,IoTDeviceName,IoTProducerBinding):

@@ -26,11 +26,16 @@ class IoTVirtualGateway:
         if self.checkIfRoomtoAddDevice() == True:
             self.connectedIoTDevices.append(IoTDeviceToBeAdded)
             self.current_iot_devices_connected = self.current_iot_devices_connected + 1
+        print 'Number of devices allowed connect to this virtual gateway: ' + str(self.max_number_iot_devices_supported)
+        print 'Number of devices now connected to this virtual gateway: ' + str(self.current_iot_devices_connected)
 
 
-    def remove_iot_device(self):
+    def remove_iot_device(self,IoTDeviceToBeRemoved):
         if self.current_iot_devices_connected > 0:
+            self.connectedIoTDevices.remove(IoTDeviceToBeRemoved)
             self.current_iot_devices_connected = self.current_iot_devices_connected - 1
+            print 'Number of devices allowed connect to this virtual gateway: ' + str (self.max_number_iot_devices_supported)
+            print 'After Removal number of devices now connected to this virtual gateway: ' + str (self.current_iot_devices_connected)
             return True
         else:
             print 'All devices already removed'

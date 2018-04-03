@@ -14,7 +14,7 @@ class IoTLoadBalancer:
         self.parent_IoTNetwork = parent_iot_network
         self.balancer_name = balancer_name
         self.distribution_policy = 'fill_first'
-        self.max_iot_devices_per_edge = 500
+
 
 
     def get_current_iot_device_count(self):
@@ -78,7 +78,7 @@ class IoTLoadBalancer:
             if action == 'create':
                 for node in self.parent_IoTNetwork.IoTNodeList:
                     # check to see if the node is less than the max the edge can handle
-                    if isinstance(node, IoTProducerHost) and getContainerCount(node.NodeDockerRemoteClient) < self.max_iot_devices_per_edge:
+                    if isinstance(node, IoTProducerHost) and getContainerCount(node.NodeDockerRemoteClient) < IoTProducerHost.max_iot_devices_on_this_host:
                         producer_host_node_list.append(node)
 
                 # choose one at random
@@ -100,10 +100,10 @@ class IoTLoadBalancer:
         # policy for filling each producer host in order of instantiation
         if self.distribution_policy == 'fill_first':
             if action == 'create':
-                for node in self.parent_IoTNetwork.IoTNodeList:
+                for found_node in self.parent_IoTNetwork.IoTNodeList:
                     # check to see if the node is less than the max the edge can handle
-                    if isinstance(node, IoTProducerHost) and getContainerCount(node.NodeDockerRemoteClient) < self.max_iot_devices_per_edge:
-                        return node
+                    if isinstance(found_node, IoTProducerHost) and getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_iot_devices_on_this_host:
+                        return found_node
 
 
 

@@ -201,7 +201,8 @@ def workloadDist():
     # Step 1: Create the virtual gateways
     scaling_factor = 1
 
-    number_of_receivers = 5 * scaling_factor
+    #number_of_receivers = 5 * scaling_factor
+    number_of_receivers = 2
     number_of_sensors = 90 * scaling_factor
     number_of_sensors_assigned_to_receiver = number_of_sensors / number_of_receivers
 
@@ -227,7 +228,7 @@ def workloadDist():
 
 
     # Step 2: Create the virtual sensors
-    createNewSensor(7)
+    createNewSensor(12)
 
 
 def createNewSensor(count):
@@ -241,16 +242,20 @@ def createNewSensor(count):
 
 
         destination_producer_host = iot_lb_1.get_target_iot_device_edge('create')
-        IoTDeviceID =  'test'
-        IoTDeviceName = destination_producer_host.NodeName + '_' +producer_prefix + str(destination_producer_host.boundNode.getNextFreeVirtualGateway().gateway_app_port)
         IoTProducerBinding = destination_producer_host
+        IoTDeviceID =  'test'
+        BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway()
+        IoTDeviceName = destination_producer_host.NodeName + '_' +producer_prefix + str(BoundIoTVirtualGateway.gateway_app_port)
+
 
 
         new_sensor = IotTemperatureSensor(IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay)
 
         new_sensor.createIoTVirtualTemperatureSensor()
 
-        IoTProducerBinding.addVirtualIoTDevice(new_sensor)
+        #add device to producer host
+        IoTProducerBinding.addVirtualIoTDevice(new_sensor,BoundIoTVirtualGateway)
+
 
 
 '''
@@ -390,6 +395,7 @@ time.sleep(10)
 #kill the receivers after the experiment
 #stopAndRemoveContainers(receiver_client)
 iot_lb_1.remove_all_gateways()
+iot_lb_1.remove_all_iot_devices()
 
 time.sleep(10)
 
