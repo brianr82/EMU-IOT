@@ -2,9 +2,9 @@ import docker
 import time
 import datetime
 from receiver import *
-from monitor2 import *
+from IoTMonitor import *
 from threading import Thread
-from dockerSensor import *
+from IoTDockerController import *
 from SensorPair import *
 
 

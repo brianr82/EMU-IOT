@@ -1,5 +1,5 @@
 import docker
-from monitor2 import monitor2
+from IoTMonitor import monitor2
 from threading import Thread
 from threading import Thread
 import json

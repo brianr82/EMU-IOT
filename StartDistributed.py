@@ -7,9 +7,9 @@ from IoTNode import *
 
 from IoTApplicationHost import *
 from receiver import *
-from monitor2 import *
+from IoTMonitor import *
 from threading import Thread
-from dockerSensor import *
+from IoTDockerController import *
 from SensorPair import *
 from IoTNetwork import *
 from IoTLoadBalancer import *
