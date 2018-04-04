@@ -112,15 +112,15 @@ class IoTLoadBalancer:
 
 
     def iot_network_cleanup(self):
-        print 'IoT_Device Count  is ', self.get_current_iot_device_count()
-        print 'IoT_Gateway Count  is ', self.get_current_iot_gateway_count()
+        print ('IoT_Device Count  is ', self.get_current_iot_device_count())
+        print ('IoT_Gateway Count  is ', self.get_current_iot_gateway_count())
         if self.get_current_iot_device_count() > 0 or self.get_current_iot_gateway_count() > 0:
-            print 'Found some lingering iot devices and gateways on the network.....'
-            print 'Now removing old virtual iot devices and gateways.....'
+            print ('Found some lingering iot devices and gateways on the network.....')
+            print ('Now removing old virtual iot devices and gateways.....')
             self.remove_all_iot_devices()
             self.remove_all_gateways()
-            print 'After cleaning the iot device count is now ', self.get_current_iot_device_count()
-            print 'After cleaning the iot gateway count is now ', self.get_current_iot_device_count()
-            print 'Environment is clean and ready to go.....'
+            print ('After cleaning the iot device count is now ', self.get_current_iot_device_count())
+            print ('After cleaning the iot gateway count is now ', self.get_current_iot_device_count())
+            print ('Environment is clean and ready to go.....')
         else:
-            print 'Environment is clean and ready to go.....'
+            print ('Environment is clean and ready to go.....')

@@ -146,10 +146,10 @@ def update_monitor():
 
 
 
-print '*********************************************************************************************************'
-print 'Starting New Experiment Session..........................................................................'
-print 'Monitors Started'
-print '*********************************************************************************************************'
+print ('*********************************************************************************************************')
+print ('Starting New Experiment Session..........................................................................')
+print ('Monitors Started')
+print ('*********************************************************************************************************')
 
 
 '''
@@ -372,11 +372,11 @@ Clean up
 '''
 experiment_run_time_seconds = 60
 time.sleep(experiment_run_time_seconds)
-print 'End Experiment'
+print ('End Experiment')
 
 
 
-print 'Stopping Monitors'
+print ('Stopping Monitors')
 KafkaMonitor.stopMonitor()
 ProducerMonitor.stopMonitor()
 Spark_Cassandra_Monitor.stopMonitor()
@@ -406,6 +406,6 @@ time.sleep(10)
 
 
 
-print '-----------------------------Done'
+print ('-----------------------------Done')
 
 sys.exit(0)

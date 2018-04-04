@@ -24,5 +24,5 @@ class IoTTemperatureSensor(IoTDevice):
                                            name=self.IoTDeviceName \
                                            )
         new_container = self.IoTProducerBinding.NodeDockerRemoteClient.containers.get(self.IoTDeviceName)
-        print 'Created Container\t' + new_container.name
+        print ('Created Container\t' + new_container.name)
 

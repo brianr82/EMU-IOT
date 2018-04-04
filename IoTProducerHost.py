@@ -17,11 +17,11 @@ class IoTProducerHost(IoTNode):
         #increment everytime we add, counter will be used to give each new device a unique id
         self.IoTDeviceCounter  = self.IoTDeviceCounter +1
 
-        print new_iot_device_to_add.IoTDeviceName + ' added'
+        print (new_iot_device_to_add.IoTDeviceName + ' added')
 
 
     def removeVirtualIoTDevice(self,existing_iot_device_to_delete,BoundIoTVirtualGateway):
         assert isinstance (existing_iot_device_to_delete, IoTDevice)
         self.virtualIoTDeviceList.remove(existing_iot_device_to_delete)
         BoundIoTVirtualGateway.remove_iot_device (existing_iot_device_to_delete)
-        print existing_iot_device_to_delete.IoTDeviceName + ' removed'
+        print (existing_iot_device_to_delete.IoTDeviceName + ' removed')

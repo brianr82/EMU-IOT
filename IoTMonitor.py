@@ -72,26 +72,26 @@ class monitor2:
                     # self.previousCPU = b.precpu_stats.cpu_usage.total_usage
                     self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
                 else:
-                    print '----------------------------------------------------'
-                    print 'ResultFileName\t' + self.resultFileName
-                    print 'Container count\t' + str(len(self.dockerClientToMonitor.containers.list(all)))
+                    print ('----------------------------------------------------')
+                    print ('ResultFileName\t' + self.resultFileName)
+                    print ('Container count\t' + str(len(self.dockerClientToMonitor.containers.list(all))))
                     # print 'Read Timestamp\t' + b.read
-                    print 'Read Timestamp\t' + b['read']
-                    print 'Active Producers\t' + str(self.ActiveProducers)
+                    print ('Read Timestamp\t' + b['read'])
+                    print ('Active Producers\t' + str(self.ActiveProducers))
                     # print 'MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b.memory_stats.usage)) + ' ' + str(self.sizeof_fmt(b.memory_stats.limit))
-                    print 'MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b['memory_stats']['usage'])) + ' ' + str(
-                        self.sizeof_fmt(b['memory_stats']['limit']))
-                    print 'MEM %\t' + str(
-                        round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2))
+                    print ('MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b['memory_stats']['usage'])) + ' ' + str(
+                        self.sizeof_fmt(b['memory_stats']['limit'])))
+                    print ('MEM %\t' + str(
+                        round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)))
 
 
                     #self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
                     #self.previousSystem = b['precpu_stats']['system_cpu_usage']
-                    print 'CPU %\t' + str(self.calculateCPUPercentUnix(b))
+                    print ('CPU %\t' + str(self.calculateCPUPercentUnix(b)))
 
                     throughput = self.calculateThroughput(b)
-                    print 'Sent (kb/sec)\t' + str(throughput['tx_delta'])
-                    print 'Received (kb/sec)\t' + str(throughput['rx_delta'])
+                    print ('Sent (kb/sec)\t' + str(throughput['tx_delta']))
+                    print ('Received (kb/sec)\t' + str(throughput['rx_delta']))
 
                     self.previousRX = b['networks']['eth0']['rx_bytes']
                     self.previousTX = b['networks']['eth0']['tx_bytes']

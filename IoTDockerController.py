@@ -33,7 +33,7 @@ def createReceiver(receiver_client,port_num):
                                    name='receiver_' + str(port_num) \
                                    )
     new_container = receiver_client.containers.get('receiver_' + str(port_num))
-    print 'Created Container\t' + new_container.name
+    print ('Created Container\t' + new_container.name)
 
 
 def createProducer(producer_client,PI_IP,PI_PORT,NUM_MSG,SENSOR_ID,DELAY_SECONDS):
@@ -48,7 +48,7 @@ def createProducer(producer_client,PI_IP,PI_PORT,NUM_MSG,SENSOR_ID,DELAY_SECONDS
             name='sensor_' + str(PI_PORT) +"_"+ SENSOR_ID \
                                    )
     new_container = producer_client.containers.get('sensor_' + str(PI_PORT) +"_"+ SENSOR_ID)
-    print 'Created Container\t' + new_container.name
+    print ('Created Container\t' + new_container.name)
 
 
 
@@ -62,7 +62,7 @@ def createReceiverNew(receiver_client,receiver):
                                    name=receiver.get_receiver_name() \
                                   )
     new_container = receiver_client.containers.get(receiver.get_receiver_name())
-    print 'Created Container\t' + new_container.name
+    print ('Created Container\t' + new_container.name)
 
 
 def createProducerNew(producer_client,sensor_pair,NUM_MSG,DELAY_SECONDS):
@@ -77,7 +77,7 @@ def createProducerNew(producer_client,sensor_pair,NUM_MSG,DELAY_SECONDS):
                                     name=sensor_pair.get_producer_name() \
                                    )
     new_container = producer_client.containers.get(sensor_pair.get_producer_name())
-    print 'Created Container\t' + new_container.name
+    print ('Created Container\t' + new_container.name)
 
 
 
@@ -97,14 +97,14 @@ def getContainerCount(client_manager):
 def printContainers(client_manager):
     # print list of created containers
     for container in client_manager.containers.list(all):
-        print 'Created container\t' + container.name
+        print ('Created container\t' + container.name)
 
 
 def stopAllProducerContainers(client_manager,client_monitor_list):
 
     # stop created containers
     for container in client_manager.containers.list(all):
-        print 'Stopping container\t' + container.name
+        print ('Stopping container\t' + container.name)
         container.kill()
         container.remove()
         for monitor in client_monitor_list:
@@ -123,7 +123,7 @@ def stop_N_Producer_Containers(client_manager,client_monitor_list,number_produce
     #stop the desired amount of containers
     for x in range(0,number_producers_to_stop):
         container = container_list[x]
-        print 'Stopping container\t' + container.name
+        print ('Stopping container\t' + container.name)
 
         container.kill()
         container.remove()
@@ -135,7 +135,7 @@ def stopAndRemoveContainers(client_manager):
 
     # stop created containers
     for container in client_manager.containers.list(all):
-        print 'Stopping container\t' + container.name
+        print ('Stopping container\t' + container.name)
         if container.status != 'running':
             container.remove()
         else:

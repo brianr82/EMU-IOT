@@ -13,7 +13,7 @@ class IoTGatewayHost(IoTNode):
     def removeVirtualGateway(self,virtual_IoTGateway):
         self.virtualIoTGatewayList.remove(virtual_IoTGateway)
 
-    def hasFreeVirtualGateway(self):
+    def hasFreeVirtualGateway(self,):
 
         for virtual_gateway in self.virtualIoTGatewayList:
             if virtual_gateway.checkIfRoomtoAddDevice ():
