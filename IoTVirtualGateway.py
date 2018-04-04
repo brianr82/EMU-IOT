@@ -3,13 +3,14 @@ from abc import ABCMeta, abstractmethod
 
 class IoTVirtualGateway(object):
     __metaclass__ = ABCMeta
-    def __init__(self, gateway_name, gateway_app_port,max_number_iot_devices_supported,IoTGatewayHost):
+    def __init__(self, gateway_name, gateway_app_port,max_number_iot_devices_supported,IoTGatewayHost,DeviceType):
         self.gateway_name = gateway_name
         self.gateway_app_port = gateway_app_port
         self.max_number_iot_devices_supported = max_number_iot_devices_supported
         self.current_iot_devices_connected = 0
         self.IoTGatewayHostClient = IoTGatewayHost.NodeDockerRemoteClient
         self.connectedIoTDevices = []
+        self.DeviceType = DeviceType
 
 
     @abstractmethod

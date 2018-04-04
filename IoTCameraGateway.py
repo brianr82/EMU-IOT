@@ -2,12 +2,12 @@ from IoTVirtualGateway import *
 from IoTTemperatureSensor import *
 from IoTDeviceType import *
 
-class IoTTemperatureGateway(IoTVirtualGateway):
+class IoTCameraGateway(IoTVirtualGateway):
     def __init__(self, gateway_name, gateway_app_port, max_number_iot_devices_supported, IoTGatewayHost, DeviceType):
         IoTVirtualGateway.__init__ (self, gateway_name, gateway_app_port, max_number_iot_devices_supported, IoTGatewayHost,DeviceType)
 
-        assert(self.DeviceType == IoTDeviceType.temperature)\
-            ,'Your supplied:' + self.DeviceType.value + ', expected: ' + IoTDeviceType.temperature.value
+        assert(self.DeviceType == IoTDeviceType.camera)\
+            ,'Your supplied:' + self.DeviceType.value + ', expected: ' + IoTDeviceType.camera.value
 
         self.docker_container_name = self.gateway_name + '_' + self.DeviceType.value
 

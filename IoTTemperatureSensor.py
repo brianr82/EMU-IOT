@@ -1,5 +1,6 @@
 from IoTDevice import *
 from IoTProducerHost import *
+from IoTDeviceType import *
 
 
 
@@ -9,7 +10,7 @@ class IoTTemperatureSensor(IoTDevice):
         #get the ip address of the gateway that is bound to the producer host
         self.destination_gateway_ip = self.IoTProducerBinding.boundNode.NodeIPAddress
         #get the port number for the  a virtual gateway
-        self.destination_virtual_gateway_port = self.IoTProducerBinding.boundNode.getNextFreeVirtualGateway().gateway_app_port
+        self.destination_virtual_gateway_port = self.IoTProducerBinding.boundNode.getNextFreeVirtualGateway(IoTDeviceType.temperature).gateway_app_port
         self.number_of_msg_to_send = number_of_msg_to_send
         self.producer_device_delay = producer_device_delay
 

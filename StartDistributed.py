@@ -14,7 +14,9 @@ from SensorPair import *
 from IoTNetwork import *
 from IoTLoadBalancer import *
 from IoTTemperatureGateway import *
+from IoTCameraGateway import *
 from IoTTemperatureSensor import *
+from IoTDeviceType import *
 import sys
 
 
@@ -219,15 +221,32 @@ def workloadDist():
         receiver_prefix = gateway_host.NodeName + '_'
 
         for port_number in range(start_remote_port_range, end_remote_port_range):
+
+
+            print ('Creating Temperature Gateways')
             #create the each virtual gateway
-            new_iot_temperature_gateway = IoTTemperatureGateway(receiver_prefix + '_receiver_' + str(port_number),port_number,max_number_iot_devices_supported_in_virtual_gateway,gateway_host)
+            new_iot_temperature_gateway = IoTTemperatureGateway(receiver_prefix + '_receiver_' + str(port_number),
+                                                                port_number,
+                                                                max_number_iot_devices_supported_in_virtual_gateway,
+                                                                gateway_host,
+                                                                IoTDeviceType.temperature)
             #create the actual docker container
             new_iot_temperature_gateway.createIoTVirtualGateway()
             #register the  virtual gateway to the physical gateway host
             gateway_host.addVirtualGateway(new_iot_temperature_gateway)
 
+            print ('Creating Camera Gateways')
+            # create the each virtual gateway
+            new_iot_camera_gateway = IoTCameraGateway (receiver_prefix + '_receiver_' + str (port_number+10),
+                                                                 port_number+10,
+                                                                 max_number_iot_devices_supported_in_virtual_gateway,
+                                                                 gateway_host, IoTDeviceType.camera)
+            # create the actual docker container
+            new_iot_camera_gateway.createIoTVirtualGateway ()
+            # register the  virtual gateway to the physical gateway host
+            gateway_host.addVirtualGateway(new_iot_camera_gateway)
 
-
+    print ('---------------------------------Done creating IoTGateways')
 
     # Step 2: Create the virtual sensors
     createNewSensor(12)
@@ -246,7 +265,7 @@ def createNewSensor(count):
         destination_producer_host = iot_lb_1.get_target_iot_device_edge('create')
         IoTProducerBinding = destination_producer_host
         IoTDeviceID =  'test'
-        BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway()
+        BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway(IoTDeviceType.temperature)
         IoTDeviceName = destination_producer_host.NodeName + '_' +producer_prefix + str(BoundIoTVirtualGateway.gateway_app_port)
 
 
@@ -370,7 +389,7 @@ workloadDist()
 Clean up
 *****************************************************************************************************
 '''
-experiment_run_time_seconds = 60
+experiment_run_time_seconds = 90
 time.sleep(experiment_run_time_seconds)
 print ('End Experiment')
 
