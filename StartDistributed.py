@@ -144,17 +144,17 @@ ProducerThread = Thread(target=ProducerMonitor.createNewMonitor)
 print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeName)
 KafkaMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeDockerRemoteClient)
 KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
-Kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
+Kafka_thread = Thread(target=KafkaMonitor.getUpdatedStats)
 
 print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeName)
 Spark_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeDockerRemoteClient)
 Spark_Monitor.create_new_result_file(directory+'Spark_Readings_'+ experiment_tag)
-Spark_Thread = Thread(target=Spark_Monitor.createNewMonitor)
+Spark_Thread = Thread(target=Spark_Monitor.getUpdatedStats)
 
 print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeName)
 Cassandra_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeDockerRemoteClient)
 Cassandra_Monitor.create_new_result_file(directory+'Cassandra_Readings_'+ experiment_tag)
-Cassandra_Thread = Thread(target=Cassandra_Monitor.createNewMonitor)
+Cassandra_Thread = Thread(target=Cassandra_Monitor.getUpdatedStats)
 
 #create the monitor manager
 MonitorManager = IoTMonitorManager()
@@ -228,9 +228,9 @@ def workloadDist():
         #set the name of the Gateway Host
         receiver_prefix = gateway_host.NodeName + '_'
         # set the max number of virtual gateways you want on each gateway host
-        gateway_host.maxNumberOfVirtualIoTGatewaysSupported =2
+        gateway_host.maxNumberOfVirtualIoTGatewaysSupported =4
         #set the max numbers of virtual IoT devices that can be assigned to a single virtual gateway
-        max_number_iot_devices_supported_in_virtual_gateway = 5
+        max_number_iot_devices_supported_in_virtual_gateway = 50
         print('Physical Gateway Host ' + gateway_host.NodeName + ' will support '+ str(gateway_host.maxNumberOfVirtualIoTGatewaysSupported*max_number_iot_devices_supported_in_virtual_gateway) +' IoTdevices')
 
         start_remote_port_range = 3000
@@ -268,7 +268,15 @@ def workloadDist():
     print ('---------------------------------Done creating IoTGateways')
 
     # Step 2: Create the virtual sensors
-    createNewSensor(12)
+    createNewSensor(400)
+
+
+
+
+
+
+
+
 
 
 def createNewSensor(count):

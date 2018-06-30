@@ -16,6 +16,7 @@ class IoTMonitor:
         self.resultFileName = ''
         self.ActiveProducers = 0
         self.fileHeaderWritten = False
+        self.hostCPUUsage = 0
 
     def calculateCPUPercentUnix(self, jsondata):
         cpuPercent = 0.0
@@ -56,7 +57,9 @@ class IoTMonitor:
     *********************************************************************************************************
     '''
 
-    def createNewMonitor(self):
+    def getUpdatedStats(self):
+
+        aggregate_cpu = 0
         while self.exitFlag:
             time.sleep(5)
             all_containers = self.dockerClientToMonitor.containers.list(all)
@@ -89,7 +92,11 @@ class IoTMonitor:
 
                     #self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
                     #self.previousSystem = b['precpu_stats']['system_cpu_usage']
-                    print ('CPU %\t' + str(self.calculateCPUPercentUnix(b)))
+
+                    container_cpu = self.calculateCPUPercentUnix (b)
+                    print ('CPU %\t' + str(container_cpu))
+
+                    aggregate_cpu = aggregate_cpu +container_cpu
 
                     throughput = self.calculateThroughput(b)
                     print ('Sent (kb/sec)\t' + str(throughput['tx_delta']))
@@ -126,8 +133,12 @@ class IoTMonitor:
                         for value in record:
                             dict_writer.writerow(value)
 
-
+            #write host level stats
+            self.hostCPUUsage = aggregate_cpu  # return the total cpu usage for this monitor ie, this host
         return
+
+
+
 
     def stopMonitor(self):
         self.exitFlag = False
@@ -156,3 +167,7 @@ class IoTMonitor:
 
     def decrement_active_producer_count(self):
         self.ActiveProducers = self.ActiveProducers - 1
+
+
+
+
