@@ -4,7 +4,7 @@ from IoTNode import *
 class IoTGatewayHost(IoTNode):
     def __init__(self, NodeType,NodeName,NodeDockerRemoteClient,NodeIPAddress,NodeDockerPort,*boundNode):
         IoTNode.__init__ (self, NodeType, NodeName, NodeDockerRemoteClient, NodeIPAddress, NodeDockerPort, *boundNode)
-        self.maxNumberOfVirtualIoTGatewaysSupported = 2
+        self.maxNumberOfVirtualIoTGatewaysSupported = 0
         self.virtualIoTGatewayList = []
 
     def addVirtualGateway(self,new_virtual_iotgateway):

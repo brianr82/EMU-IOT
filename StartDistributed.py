@@ -26,7 +26,20 @@ import sys
 # docker build --no-cache=true -f latest/Dockerfile https://github.com/brianr82/node-red-docker.git -t brianr82/multinodered:latest
 
 '''
-Configs
+*****************************************************************************************************************
+
+
+
+
+
+Configuration Settings
+
+
+
+
+
+
+*****************************************************************************************************************
 '''
 
 #configs for docker machine that will host the synthetic iot devices
@@ -75,7 +88,7 @@ iot_lb_1 = IoTLoadBalancer('LoadBalancer1',iot_network_1)
 
 #add nodes to the network
 #each node represents an instance of docker(i.e. a VM)
-iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Kafka01',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
+iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Kafka',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Spark',spark_client,spark_manager_docker_ip,spark_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Cassandra',cassandra_client,cassandra_manager_docker_ip,cassandra_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
@@ -92,123 +105,139 @@ iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer2').bindToIoTNode(iot_lb_1.pa
 #Cleanup Old Containers from previous experiments
 iot_lb_1.iot_network_cleanup()
 
-#TO BE REMOVED
-producer_client = iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer1').NodeDockerRemoteClient
-receiver_client = iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTReceiver1').NodeDockerRemoteClient
+
 
 '''
 *****************************************************************************************************************
+
+
+
+
+
 Experiment Monitors
+
+
+
+
+
 *****************************************************************************************************************
 '''
+print('*********************************************************************************************************')
+print('Attempting to start monitors')
+print('*********************************************************************************************************')
 
-'''
-Start the monitors
-'''
-
+#set the name of this experiment run
 experiment_tag = 'Run_1_Final_Test'
+#set the subdirectory name where you want the results data files to go
 directory = 'ExperimentResults/'
-
-
+'''
+print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTReceiver1').NodeName)
 PiMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTReceiver1').NodeDockerRemoteClient)
 PiMonitor.create_new_result_file(directory+'PiReadings_'+ experiment_tag)
 Pi_thread = Thread(target=PiMonitor.createNewMonitor)
 
-#Pi_thread.start()
-
-
-KafkaMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka01').NodeDockerRemoteClient)
-KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
-Kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
-
-#Kafka_thread.start()
-
-
+print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer1').NodeName)
 ProducerMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer1').NodeDockerRemoteClient)
 ProducerMonitor.create_new_result_file(directory+'Producer_Readings_'+experiment_tag)
 ProducerThread = Thread(target=ProducerMonitor.createNewMonitor)
+'''
+print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeName)
+KafkaMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeDockerRemoteClient)
+KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
+Kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
 
-#ProducerThread.start()
-
-
+print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeName)
 Spark_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeDockerRemoteClient)
 Spark_Monitor.create_new_result_file(directory+'Spark_Readings_'+ experiment_tag)
 Spark_Thread = Thread(target=Spark_Monitor.createNewMonitor)
 
-#Spark_Thread.start()
-
-
+print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeName)
 Cassandra_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeDockerRemoteClient)
 Cassandra_Monitor.create_new_result_file(directory+'Cassandra_Readings_'+ experiment_tag)
 Cassandra_Thread = Thread(target=Cassandra_Monitor.createNewMonitor)
 
-#Cassandra_Thread.start()
-
 #create the monitor manager
 MonitorManager = IoTMonitorManager()
 #add the monitors
-MonitorManager.addMonitor(PiMonitor)
-MonitorManager.addMonitor(ProducerMonitor)
+#MonitorManager.addMonitor(PiMonitor)
+#MonitorManager.addMonitor(ProducerMonitor)
 MonitorManager.addMonitor(Spark_Monitor)
 MonitorManager.addMonitor(KafkaMonitor)
 MonitorManager.addMonitor(Cassandra_Monitor)
 
 #add the threads
-MonitorManager.addThread(Pi_thread)
+#MonitorManager.addThread(Pi_thread)
+#MonitorManager.addThread(ProducerThread)
 MonitorManager.addThread(Kafka_thread)
-MonitorManager.addThread(ProducerThread)
 MonitorManager.addThread(Spark_Thread)
 MonitorManager.addThread(Cassandra_Thread)
 
 
-
-
-
-print ('*********************************************************************************************************')
-print ('Starting New Experiment Session..........................................................................')
-print ('Monitors Started')
-print ('*********************************************************************************************************')
-
-
+print('*********************************************************************************************************')
+print('Experiment Monitors Started')
+print('*********************************************************************************************************')
 '''
-*****************************************************************************************************************
+******************************************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
 Main Program
-*****************************************************************************************************************
-'''
-
-'''
-Start the Producer and Receiver Containers
-'''
 
 
-'''
-Workload Distributed***************************************************************************************************
-'''
 
 
+
+
+
+
+
+
+
+
+
+
+******************************************************************************************************************
+'''
+'''
+Experiment Workload Distributed***********************************************************************************
+'''
 
 def workloadDist():
+    print('Starting New Experiment Session..........................................................................')
     MonitorManager.startAllMonitors()
 
     # Step 1: Create the virtual gateways
-    scaling_factor = 1
-
-    #number_of_receivers = 5 * scaling_factor
-    number_of_receivers = 2
-    number_of_sensors = 90 * scaling_factor
-    number_of_sensors_assigned_to_receiver = number_of_sensors / number_of_receivers
-
-    start_remote_port_range = 3000
-    end_remote_port_range = start_remote_port_range + number_of_receivers
 
 
     #get list of all IotGatewayHostNodes (ie Vm's that can host VirtualIotGateway's)
     host_gateway_list = iot_lb_1.getIoTHostGatewayList()
 
-    max_number_iot_devices_supported_in_virtual_gateway =5
 
+    #Gateway Host Configuration
     for gateway_host in host_gateway_list:
+
+        #set the name of the Gateway Host
         receiver_prefix = gateway_host.NodeName + '_'
+        # set the max number of virtual gateways you want on each gateway host
+        gateway_host.maxNumberOfVirtualIoTGatewaysSupported =2
+        #set the max numbers of virtual IoT devices that can be assigned to a single virtual gateway
+        max_number_iot_devices_supported_in_virtual_gateway = 5
+        print('Physical Gateway Host ' + gateway_host.NodeName + ' will support '+ str(gateway_host.maxNumberOfVirtualIoTGatewaysSupported*max_number_iot_devices_supported_in_virtual_gateway) +' IoTdevices')
+
+        start_remote_port_range = 3000
+        end_remote_port_range = start_remote_port_range + gateway_host.maxNumberOfVirtualIoTGatewaysSupported
+
+
+
 
         for port_number in range(start_remote_port_range, end_remote_port_range):
 
@@ -274,7 +303,7 @@ def createNewSensor(count):
 
 '''
 Workload B ************************************************************************************************************
-'''
+
 
 def workloadB():
 
@@ -316,10 +345,10 @@ def workloadB():
 
 
 
-    '''
+    
     Define workload profile below
-    '''
-    #create the producers as needed
+    
+    create the producers as needed
 
     number_of_msg_to_send = 10000000
     producer_device_delay = 1000000
@@ -360,7 +389,7 @@ def workloadB():
 
 
 
-
+'''
 
 
 '''
@@ -393,13 +422,10 @@ MonitorManager.stopAllMonitors()
 
 
 #wait for all threads to finish before ending the program
+print ('Joining Monitor Threads')
 MonitorManager.joinThreads()
 
 
-#kafka_thread.join()
-#producerThread.join()
-#Spark_Cassandra_Thread.join()
-#Pi_thread.join()
 
 time.sleep(10)
 
@@ -407,7 +433,7 @@ time.sleep(10)
 
 
 #kill the receivers after the experiment
-#stopAndRemoveContainers(receiver_client)
+
 iot_lb_1.remove_all_gateways()
 iot_lb_1.remove_all_iot_devices()
 
