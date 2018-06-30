@@ -4,7 +4,7 @@ import time
 from csv import DictWriter
 
 
-class monitor2:
+class IoTMonitor:
     def __init__(self, dockerClientToMonitor):
 
         self.dockerClientToMonitor = dockerClientToMonitor
@@ -79,11 +79,13 @@ class monitor2:
                     print ('Read Timestamp\t' + b['read'])
                     print ('Active Producers\t' + str(self.ActiveProducers))
                     # print 'MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b.memory_stats.usage)) + ' ' + str(self.sizeof_fmt(b.memory_stats.limit))
+
+
                     print ('MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b['memory_stats']['usage'])) + ' ' + str(
                         self.sizeof_fmt(b['memory_stats']['limit'])))
                     print ('MEM %\t' + str(
                         round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)))
-
+                    
 
                     #self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
                     #self.previousSystem = b['precpu_stats']['system_cpu_usage']

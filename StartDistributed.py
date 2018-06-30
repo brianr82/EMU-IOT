@@ -4,7 +4,7 @@ import datetime
 
 
 from IoTNode import *
-
+from IoTMonitorManager import *
 from IoTApplicationHost import *
 from receiver import *
 from IoTMonitor import *
@@ -17,6 +17,7 @@ from IoTTemperatureGateway import *
 from IoTCameraGateway import *
 from IoTTemperatureSensor import *
 from IoTDeviceType import *
+
 import sys
 
 
@@ -29,25 +30,27 @@ Configs
 '''
 
 #configs for docker machine that will host the synthetic iot devices
-iot_producer_manager_docker_ip_1 = '192.168.2.240'
+iot_producer_manager_docker_ip_1 = '10.12.7.50'
 iot_producer_manager_docker_port_1 = '2375'
-iot_producer_manager_docker_ip_2 = '192.168.2.241'
+iot_producer_manager_docker_ip_2 = '10.12.7.51'
 iot_producer_manager_docker_port_2 = '2375'
 
 #configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
-iot_gateway_manager_docker_ip_1 = '192.168.2.242'
+iot_gateway_manager_docker_ip_1 = '10.12.7.52'
 iot_gateway_manager_docker_port_1 = '2375'
-iot_gateway_manager_docker_ip_2 = '192.168.2.243'
+iot_gateway_manager_docker_ip_2 = '10.12.7.53'
 iot_gateway_manager_docker_port_2 = '2375'
 
 
 #configs for docker machine that will host the kafka cluster
-kafka_manager_docker_ip = '10.12.7.41'
+kafka_manager_docker_ip = '10.12.7.48'
 kafka_manager_docker_port = '2375'
-#configs for docker machine that will host the spark_cassandra instances
-spark_cassandra_manager_docker_ip = '10.12.7.42'
-spark_cassandra_manager_docker_port = '2375'
-
+#configs for docker machine that will host the spark instances
+spark_manager_docker_ip = '10.12.7.49'
+spark_manager_docker_port = '2375'
+#configs for docker machine that will host the assandra instances
+cassandra_manager_docker_ip = '10.12.7.5'
+cassandra_manager_docker_port = '2375'
 
 
 #Create remote docker clients to manage simulation environment
@@ -58,7 +61,8 @@ iot_producer_client_2 = docker.DockerClient(base_url='tcp://'+iot_producer_manag
 iot_gateway_client_2 = docker.DockerClient(base_url='tcp://'+iot_gateway_manager_docker_ip_2+':'+iot_gateway_manager_docker_port_2)
 
 kafka_client = docker.DockerClient(base_url='tcp://'+kafka_manager_docker_ip+':'+kafka_manager_docker_port)
-spark_cassandra_client = docker.DockerClient(base_url='tcp://'+spark_cassandra_manager_docker_ip+':'+spark_cassandra_manager_docker_port)
+spark_client = docker.DockerClient(base_url='tcp://'+spark_manager_docker_ip+':'+spark_manager_docker_port)
+cassandra_client = docker.DockerClient(base_url='tcp://'+cassandra_manager_docker_ip+':'+cassandra_manager_docker_port)
 
 
 
@@ -72,7 +76,8 @@ iot_lb_1 = IoTLoadBalancer('LoadBalancer1',iot_network_1)
 #add nodes to the network
 #each node represents an instance of docker(i.e. a VM)
 iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Kafka01',kafka_client,kafka_manager_docker_ip,kafka_manager_docker_port))
-iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','SparkCassandra',spark_cassandra_client,spark_cassandra_manager_docker_ip,spark_cassandra_manager_docker_port))
+iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Spark',spark_client,spark_manager_docker_ip,spark_manager_docker_port))
+iot_network_1.IoTNodeList.append(IoTApplicationHost('Application','Cassandra',cassandra_client,cassandra_manager_docker_ip,cassandra_manager_docker_port))
 iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer1',iot_producer_client_1,iot_producer_manager_docker_ip_1,iot_producer_manager_docker_port_1))
 iot_network_1.IoTNodeList.append(IoTGatewayHost('IoT_Gateway_Host','IoTReceiver1',iot_gateway_client_1,iot_gateway_manager_docker_ip_1,iot_gateway_manager_docker_port_1))
 iot_network_1.IoTNodeList.append(IoTProducerHost('IoT_Device_Host','IoTProducer2',iot_producer_client_2,iot_producer_manager_docker_ip_2,iot_producer_manager_docker_port_2))
@@ -101,50 +106,61 @@ Experiment Monitors
 Start the monitors
 '''
 
-experiment_tag = 'Run_1_second_test_a'
+experiment_tag = 'Run_1_Final_Test'
 directory = 'ExperimentResults/'
 
 
-PiMonitor = monitor2(iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTReceiver1').NodeDockerRemoteClient)
+PiMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTReceiver1').NodeDockerRemoteClient)
 PiMonitor.create_new_result_file(directory+'PiReadings_'+ experiment_tag)
 Pi_thread = Thread(target=PiMonitor.createNewMonitor)
 
-Pi_thread.start()
+#Pi_thread.start()
 
 
-KafkaMonitor = monitor2(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka01').NodeDockerRemoteClient)
+KafkaMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka01').NodeDockerRemoteClient)
 KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
-kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
+Kafka_thread = Thread(target=KafkaMonitor.createNewMonitor)
 
-kafka_thread.start()
+#Kafka_thread.start()
 
 
-ProducerMonitor = monitor2(iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer1').NodeDockerRemoteClient)
+ProducerMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer1').NodeDockerRemoteClient)
 ProducerMonitor.create_new_result_file(directory+'Producer_Readings_'+experiment_tag)
-producerThread = Thread(target=ProducerMonitor.createNewMonitor)
+ProducerThread = Thread(target=ProducerMonitor.createNewMonitor)
 
-producerThread.start()
-
-
-Spark_Cassandra_Monitor = monitor2(iot_lb_1.parent_IoTNetwork.get_IoTNode('SparkCassandra').NodeDockerRemoteClient)
-Spark_Cassandra_Monitor.create_new_result_file(directory+'Spark_Cassandra_Readings_'+ experiment_tag)
-Spark_Cassandra_Thread = Thread(target=Spark_Cassandra_Monitor.createNewMonitor)
-
-Spark_Cassandra_Thread.start()
+#ProducerThread.start()
 
 
+Spark_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeDockerRemoteClient)
+Spark_Monitor.create_new_result_file(directory+'Spark_Readings_'+ experiment_tag)
+Spark_Thread = Thread(target=Spark_Monitor.createNewMonitor)
 
-Monitor_list = []
-
-Monitor_list.append(PiMonitor)
-Monitor_list.append(KafkaMonitor)
-Monitor_list.append(ProducerMonitor)
-Monitor_list.append(Spark_Cassandra_Monitor)
+#Spark_Thread.start()
 
 
-def update_monitor():
-    for m in Monitor_list:
-        m.set_active_producer_count(iot_lb_1.get_current_iot_device_count())
+Cassandra_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeDockerRemoteClient)
+Cassandra_Monitor.create_new_result_file(directory+'Cassandra_Readings_'+ experiment_tag)
+Cassandra_Thread = Thread(target=Cassandra_Monitor.createNewMonitor)
+
+#Cassandra_Thread.start()
+
+#create the monitor manager
+MonitorManager = IoTMonitorManager()
+#add the monitors
+MonitorManager.addMonitor(PiMonitor)
+MonitorManager.addMonitor(ProducerMonitor)
+MonitorManager.addMonitor(Spark_Monitor)
+MonitorManager.addMonitor(KafkaMonitor)
+MonitorManager.addMonitor(Cassandra_Monitor)
+
+#add the threads
+MonitorManager.addThread(Pi_thread)
+MonitorManager.addThread(Kafka_thread)
+MonitorManager.addThread(ProducerThread)
+MonitorManager.addThread(Spark_Thread)
+MonitorManager.addThread(Cassandra_Thread)
+
+
 
 
 
@@ -164,32 +180,6 @@ Main Program
 Start the Producer and Receiver Containers
 '''
 
-'''
-def workloadTest():
-    start_remote_port_range = 2000
-    number_of_sensor_receiver_pairs = 2
-    end_remote_port_range = start_remote_port_range + number_of_sensor_receiver_pairs
-
-    number_of_msg_to_send = 1000
-    producer_device_delay = 500000
-
-    for port_num in range(start_remote_port_range, end_remote_port_range):
-        createSensorPair(receiver_client,producer_client,receiver_manager_docker_ip,port_num,number_of_msg_to_send,producer_device_delay,KafkaMonitor,ProducerMonitor,Spark_Cassandra_Monitor,PiMonitor)
-
-
-Workload A ************************************************************************************************************
-'''
-
-
-
-
-
-
-
-
-
-
-
 
 '''
 Workload Distributed***************************************************************************************************
@@ -197,9 +187,9 @@ Workload Distributed************************************************************
 
 
 
-
-
 def workloadDist():
+    MonitorManager.startAllMonitors()
+
     # Step 1: Create the virtual gateways
     scaling_factor = 1
 
@@ -223,7 +213,7 @@ def workloadDist():
         for port_number in range(start_remote_port_range, end_remote_port_range):
 
 
-            print ('Creating Temperature Gateways')
+            print ('Creating Temperature Gateway')
             #create the each virtual gateway
             new_iot_temperature_gateway = IoTTemperatureGateway(receiver_prefix + '_receiver_' + str(port_number),
                                                                 port_number,
@@ -235,7 +225,7 @@ def workloadDist():
             #register the  virtual gateway to the physical gateway host
             gateway_host.addVirtualGateway(new_iot_temperature_gateway)
 
-            print ('Creating Camera Gateways')
+            print ('Creating Camera Gateway')
             # create the each virtual gateway
             new_iot_camera_gateway = IoTCameraGateway (receiver_prefix + '_receiver_' + str (port_number+10),
                                                                  port_number+10,
@@ -277,6 +267,9 @@ def createNewSensor(count):
         #add device to producer host
         IoTProducerBinding.addVirtualIoTDevice(new_sensor,BoundIoTVirtualGateway)
 
+        #update the monitor
+        MonitorManager.updateActiveProducerCount(iot_lb_1)
+
 
 
 '''
@@ -308,7 +301,7 @@ def workloadB():
         receiver_name = receiver_prefix + str(port_number)
         r = receiver(receiver_name, port_number)
         receiver_list.append(r)
-        for suffix_id in range(1, number_of_sensors_assigned_to_receiver + 1):
+        for suffix_id in range(1, int(number_of_sensors_assigned_to_receiver) + 1):
             producer_name = producer_prefix + str(port_number) + '_' + str(suffix_id)
             sensor_pair_list.append(Sensorpair(port_number, producer_name, receiver_name,iot_lb_1.parent_IoTNetwork.get_IoTNode('IoTProducer1').boundNode.NodeIPAddress))
 
@@ -338,13 +331,13 @@ def workloadB():
         for i in range(0,15*scaling_factor):
             new_sensor_pair = sensor_pair_list[pair_index]
             createProducerNew(producer_client,new_sensor_pair,number_of_msg_to_send,producer_device_delay)
-            update_monitor()
+            IoTMonitorManager.updateActiveProducerCount (iot_lb_1.get_current_iot_device_count ())
             pair_index +=1
         time.sleep(180) #wait 3 minutes(180 seconds) in between batches
 
     #Step 1_B stop the containers  in batches of 15 every 10 seconds
     for x in range(0, 6):
-        stop_N_Producer_Containers(producer_client, Monitor_list,15*scaling_factor)
+        stop_N_Producer_Containers(producer_client, MonitorManager.IoTMonitorList,15*scaling_factor)
         time.sleep(180) #wait 3 minutes(180 seconds) in between batches
 
 
@@ -354,7 +347,7 @@ def workloadB():
     for pair_index in range(0, len(sensor_pair_list)):  #
         new_sensor_pair = sensor_pair_list[pair_index]
         createProducerNew(producer_client, new_sensor_pair, number_of_msg_to_send, producer_device_delay)
-        update_monitor()
+        IoTMonitorManager.updateActiveProducerCount (iot_lb_1.get_current_iot_device_count ())
 
         # time.sleep(180) #wait 3 minutes(180 seconds) in between batches
 
@@ -362,7 +355,7 @@ def workloadB():
 
     #Step 2_B Stop 30 producers every 5 minutes
     for x in range(0, 6):
-        stop_N_Producer_Containers(producer_client, Monitor_list,30*scaling_factor)
+        stop_N_Producer_Containers(producer_client, MonitorManager.IoTMonitorList,30*scaling_factor)
         time.sleep(300)
 
 
@@ -396,17 +389,17 @@ print ('End Experiment')
 
 
 print ('Stopping Monitors')
-KafkaMonitor.stopMonitor()
-ProducerMonitor.stopMonitor()
-Spark_Cassandra_Monitor.stopMonitor()
-PiMonitor.stopMonitor()
+MonitorManager.stopAllMonitors()
 
 
 #wait for all threads to finish before ending the program
-kafka_thread.join()
-producerThread.join()
-Spark_Cassandra_Thread.join()
-Pi_thread.join()
+MonitorManager.joinThreads()
+
+
+#kafka_thread.join()
+#producerThread.join()
+#Spark_Cassandra_Thread.join()
+#Pi_thread.join()
 
 time.sleep(10)
 
