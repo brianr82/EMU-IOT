@@ -17,6 +17,7 @@ from IoTTemperatureGateway import *
 from IoTCameraGateway import *
 from IoTTemperatureSensor import *
 from IoTDeviceType import *
+from IoTDeviceService import *
 
 import sys
 
@@ -213,7 +214,7 @@ Experiment Workload Distributed*************************************************
 
 def workloadDist():
     print('Starting New Experiment Session..........................................................................')
-    MonitorManager.startAllMonitors()
+
 
     # Step 1: Create the virtual gateways
 
@@ -267,8 +268,19 @@ def workloadDist():
 
     print ('---------------------------------Done creating IoTGateways')
 
+    MonitorManager.startAllMonitors ()
+
     # Step 2: Create the virtual sensors
-    createNewSensor(400)
+    #createNewSensor(401)
+
+    DeviceService = IoTDeviceService()
+
+    DeviceService.addVirutalIoTDevice(iot_lb_1,IoTDeviceType.temperature,MonitorManager)
+
+
+
+
+
 
 
 
