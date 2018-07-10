@@ -143,17 +143,17 @@ ProducerMonitor.create_new_result_file(directory+'Producer_Readings_'+experiment
 ProducerThread = Thread(target=ProducerMonitor.createNewMonitor)
 '''
 print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeName)
-KafkaMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeDockerRemoteClient)
+KafkaMonitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Kafka').NodeDockerRemoteClient,IoTMonitorType.kafka)
 KafkaMonitor.create_new_result_file(directory+'KafkaReadings_'+ experiment_tag)
 Kafka_thread = Thread(target=KafkaMonitor.getUpdatedStats)
 
 print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeName)
-Spark_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeDockerRemoteClient)
+Spark_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Spark').NodeDockerRemoteClient,IoTMonitorType.spark)
 Spark_Monitor.create_new_result_file(directory+'Spark_Readings_'+ experiment_tag)
 Spark_Thread = Thread(target=Spark_Monitor.getUpdatedStats)
 
 print('Starting monitor for: '+ iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeName)
-Cassandra_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeDockerRemoteClient)
+Cassandra_Monitor = IoTMonitor(iot_lb_1.parent_IoTNetwork.get_IoTNode('Cassandra').NodeDockerRemoteClient,IoTMonitorType.cassandra)
 Cassandra_Monitor.create_new_result_file(directory+'Cassandra_Readings_'+ experiment_tag)
 Cassandra_Thread = Thread(target=Cassandra_Monitor.getUpdatedStats)
 
@@ -170,8 +170,8 @@ MonitorManager.addMonitor(Cassandra_Monitor)
 #MonitorManager.addThread(Pi_thread)
 #MonitorManager.addThread(ProducerThread)
 MonitorManager.addThread(Kafka_thread)
-MonitorManager.addThread(Spark_Thread)
-MonitorManager.addThread(Cassandra_Thread)
+#MonitorManager.addThread(Spark_Thread)
+#MonitorManager.addThread(Cassandra_Thread)
 
 
 print('*********************************************************************************************************')
@@ -269,13 +269,33 @@ def workloadDist():
     print ('---------------------------------Done creating IoTGateways')
 
     MonitorManager.startAllMonitors ()
+    time.sleep(10)
 
     # Step 2: Create the virtual sensors
     #createNewSensor(401)
 
     DeviceService = IoTDeviceService()
 
-    DeviceService.addVirutalIoTDevice(iot_lb_1,IoTDeviceType.temperature,MonitorManager)
+    monitor_to_check = None
+    target_cpu_percentage = 10
+
+
+    for monitor in MonitorManager.IoTMonitorList:
+        if monitor.MonitorType == IoTMonitorType.kafka:
+            monitor_to_check = monitor
+
+
+
+    for i in range(0, 55):
+
+        if monitor_to_check.hostCPUUsage <  target_cpu_percentage:
+            print(str(monitor_to_check.MonitorType) + ' usage is ' + str(monitor_to_check.hostCPUUsage) + ' I can continue')
+
+            # loop through list and find kafka monitor
+            DeviceService.addVirutalIoTDevice (iot_lb_1, IoTDeviceType.temperature, MonitorManager)
+        else:
+            print('cpu threshold has been reached, I will not create more sensors')
+
 
 
 

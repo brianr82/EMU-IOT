@@ -1,3 +1,4 @@
+from  IoTMonitorType import *
 
 class IoTMonitorManager():
     def __init__(self):
@@ -6,6 +7,12 @@ class IoTMonitorManager():
 
     def addMonitor(self,IoTMonitorToAdd):
         self.IoTMonitorList.append(IoTMonitorToAdd)
+
+    def getMonitor(self):
+
+
+        return
+
 
     def addThread(self, ThreadToAdd):
         self.IoTMonitorThreadList.append (ThreadToAdd)

@@ -5,8 +5,9 @@ from csv import DictWriter
 
 
 class IoTMonitor:
-    def __init__(self, dockerClientToMonitor):
+    def __init__(self, dockerClientToMonitor,MonitorType):
 
+        self.MonitorType = MonitorType
         self.dockerClientToMonitor = dockerClientToMonitor
         self.previousRX = 0
         self.previousTX = 0
@@ -58,9 +59,8 @@ class IoTMonitor:
     '''
 
     def getUpdatedStats(self):
-
-        aggregate_cpu = 0
-        while self.exitFlag:
+        while self.exitFlag: # keep pulling the stats every 5 seconds until the stop monitor function is called.
+            aggregate_cpu = 0
             time.sleep(5)
             all_containers = self.dockerClientToMonitor.containers.list(all)
             for container in all_containers:
@@ -96,7 +96,9 @@ class IoTMonitor:
                     container_cpu = self.calculateCPUPercentUnix (b)
                     print ('CPU %\t' + str(container_cpu))
 
-                    aggregate_cpu = aggregate_cpu +container_cpu
+                    aggregate_cpu = aggregate_cpu + container_cpu
+
+                    print ('!!!!!!!!!!!!!!!!!!!!!!'+ str(aggregate_cpu))
 
                     throughput = self.calculateThroughput(b)
                     print ('Sent (kb/sec)\t' + str(throughput['tx_delta']))
@@ -167,6 +169,9 @@ class IoTMonitor:
 
     def decrement_active_producer_count(self):
         self.ActiveProducers = self.ActiveProducers - 1
+
+    def getCpuUsage(self):
+        return self.hostCPUUsage
 
 
 
