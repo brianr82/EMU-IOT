@@ -169,8 +169,8 @@ MonitorManager.addMonitor(Cassandra_Monitor)
 #add the threads
 #MonitorManager.addThread(Pi_thread)
 #MonitorManager.addThread(ProducerThread)
-MonitorManager.addThread(Kafka_thread)
-#MonitorManager.addThread(Spark_Thread)
+#MonitorManager.addThread(Kafka_thread)
+MonitorManager.addThread(Spark_Thread)
 #MonitorManager.addThread(Cassandra_Thread)
 
 
@@ -272,29 +272,53 @@ def workloadDist():
     time.sleep(10)
 
     # Step 2: Create the virtual sensors
-    #createNewSensor(401)
+    '''
+    SMART TESTING LINEAR INCREASE EXPERIMENT
+    
+    '''
 
     DeviceService = IoTDeviceService()
 
     monitor_to_check = None
-    target_cpu_percentage = 10
+    target_cpu_percentage = 15
 
-
+    # loop through list and find the monitor you need
     for monitor in MonitorManager.IoTMonitorList:
-        if monitor.MonitorType == IoTMonitorType.kafka:
+        if monitor.MonitorType == IoTMonitorType.spark:
             monitor_to_check = monitor
 
 
+    reading_cycles = 3
 
-    for i in range(0, 55):
+    search_for_target_usage = True
 
-        if monitor_to_check.hostCPUUsage <  target_cpu_percentage:
-            print(str(monitor_to_check.MonitorType) + ' usage is ' + str(monitor_to_check.hostCPUUsage) + ' I can continue')
+    while(search_for_target_usage):
+
+        if monitor_to_check.hostCPUUsage > target_cpu_percentage:
+            # sleep for n seconds to get second reading to ignore spikes and try again
+            print ('cpu threshold has been reached, but I will try ' + str (reading_cycles) + ' cycles and check again to make sure')
+            not_able_to_create = True
+            for f in range (0, reading_cycles):
+                time.sleep (5)
+                if monitor_to_check.hostCPUUsage < target_cpu_percentage:
+                    print (str (monitor_to_check.MonitorType) + ' usage is ' + str (
+                        monitor_to_check.hostCPUUsage) + '% I can continue, was only a cpu blip')
+                    DeviceService.addVirutalIoTDevice (iot_lb_1, IoTDeviceType.temperature, MonitorManager)
+                    not_able_to_create = False
+                    break
+
+            if (not_able_to_create):
+                print ('It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
+                break
+
+
+        else:
+
+            print (str (monitor_to_check.MonitorType) + ' usage is ' + str (
+                monitor_to_check.hostCPUUsage) + '% I can continue')
 
             # loop through list and find kafka monitor
             DeviceService.addVirutalIoTDevice (iot_lb_1, IoTDeviceType.temperature, MonitorManager)
-        else:
-            print('cpu threshold has been reached, I will not create more sensors')
 
 
 
@@ -309,7 +333,7 @@ def workloadDist():
 
 
 
-
+'''
 
 def createNewSensor(count):
 
@@ -339,7 +363,7 @@ def createNewSensor(count):
         #update the monitor
         MonitorManager.updateActiveProducerCount(iot_lb_1)
 
-
+'''
 
 '''
 Workload B ************************************************************************************************************
@@ -451,6 +475,8 @@ workloadDist()
 Clean up
 *****************************************************************************************************
 '''
+
+print ('Experiment over starting clean up')
 experiment_run_time_seconds = 90
 time.sleep(experiment_run_time_seconds)
 print ('End Experiment')

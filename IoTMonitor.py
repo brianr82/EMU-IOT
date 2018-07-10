@@ -77,6 +77,7 @@ class IoTMonitor:
                 else:
                     print ('----------------------------------------------------')
                     print ('ResultFileName\t' + self.resultFileName)
+                    print ('Container Name:' + container.name)
                     print ('Container count\t' + str(len(self.dockerClientToMonitor.containers.list(all))))
                     # print 'Read Timestamp\t' + b.read
                     print ('Read Timestamp\t' + b['read'])
@@ -113,15 +114,12 @@ class IoTMonitor:
                         'name': container.name,
                         'timestamp': b['read'],
                         'cpu%': str(self.calculateCPUPercentUnix(b)),
-                        'memory%': str(
-                            round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)),
+                        'memory%': str(round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)),
                         'net_receive': str(throughput['rx_delta']),
                         'net_send': str(throughput['tx_delta']),
-                        'memory_rss%': str(
-                            round(float(b['memory_stats']['stats']['rss']) / float(b['memory_stats']['limit']) * 100, 2)),
-                        'memory_active_anon%': str(
-                            round(float(b['memory_stats']['stats']['active_anon']) / float(b['memory_stats']['limit']) * 100,
-                                  2)),
+                        'memory_rss%': str(round(float(b['memory_stats']['stats']['rss']) / float(b['memory_stats']['limit']) * 100, 2)),
+                        'memory_active_anon%': str(round(float(b['memory_stats']['stats']['active_anon']) / float(b['memory_stats']['limit']) * 100,2)),
+                        'agg_cpu': str(self.hostCPUUsage),
                         }]
 
                     #self.append_experiment_reading_record(record)
@@ -136,7 +134,7 @@ class IoTMonitor:
                             dict_writer.writerow(value)
 
             #write host level stats
-            self.hostCPUUsage = aggregate_cpu  # return the total cpu usage for this monitor ie, this host
+            self.hostCPUUsage = round(aggregate_cpu,2)  # return the total cpu usage for this monitor ie, this host
         return
 
 
