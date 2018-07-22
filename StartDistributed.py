@@ -128,7 +128,7 @@ print('Attempting to start monitors')
 print('*********************************************************************************************************')
 
 #set the name of this experiment run
-experiment_tag = 'Run_1_Final_Test'
+experiment_tag = 'Run_1_Linear'
 #set the subdirectory name where you want the results data files to go
 directory = 'ExperimentResults/'
 '''
@@ -169,9 +169,9 @@ MonitorManager.addMonitor(Cassandra_Monitor)
 #add the threads
 #MonitorManager.addThread(Pi_thread)
 #MonitorManager.addThread(ProducerThread)
-#MonitorManager.addThread(Kafka_thread)
+MonitorManager.addThread(Kafka_thread)
 MonitorManager.addThread(Spark_Thread)
-#MonitorManager.addThread(Cassandra_Thread)
+MonitorManager.addThread(Cassandra_Thread)
 
 
 print('*********************************************************************************************************')
@@ -274,8 +274,8 @@ def workloadDist():
     # Step 2: Create the virtual sensors
     '''
     SMART TESTING LINEAR INCREASE EXPERIMENT
-    
     '''
+  
 
     DeviceService = IoTDeviceService()
 
@@ -477,7 +477,7 @@ Clean up
 '''
 
 print ('Experiment over starting clean up')
-experiment_run_time_seconds = 90
+experiment_run_time_seconds = 3600
 time.sleep(experiment_run_time_seconds)
 print ('End Experiment')
 
