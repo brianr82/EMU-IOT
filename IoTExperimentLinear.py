@@ -37,6 +37,7 @@ class IoTExperimentLinear(IoTExperiment):
     def run(self):
         self.__configureNetwork()
         self.__configureMonitor()
+        self.__IoTNodeSetup()
         self.__executeWorkload()
         self.__cleanUp()
 
@@ -191,19 +192,16 @@ class IoTExperimentLinear(IoTExperiment):
         # make the monitor usable outside the method
         self.IoTLinearMonitorManager = MonitorManager
 
+    def __IoTNodeSetup(self):
+        print ('............................................Configuring producer hosts and activating virtual gateways')
+        # Step 1: Configure Producer Hosts
+        host_producer_list = self.IoTLinearLoadbalancer.getIoTHostProducerList ()
+        for producer_host in host_producer_list:
+            producer_host.max_allowed_iot_devices_on_this_host = self.max_devices_on_a_producer_host
 
+        # Step 2: Create the virtual gateways
 
-
-
-
-
-
-
-    def __executeWorkload(self):
-        print (
-            'Starting New Experiment Session..........................................................................')
-
-        # Step 1: Create the virtual gateways
+        max_VirtualIoTGatewaysSupportedOnAGatewayHost = self.max_devices_on_a_producer_host // self.max_devices_assigned_to_a_virtual_gateway
 
         # get list of all IotGatewayHostNodes (ie Vm's that can host VirtualIotGateway's)
         host_gateway_list = self.IoTLinearLoadbalancer.getIoTHostGatewayList ()
@@ -214,9 +212,9 @@ class IoTExperimentLinear(IoTExperiment):
             # set the name of the Gateway Host
             receiver_prefix = gateway_host.NodeName + '_'
             # set the max number of virtual gateways you want on each gateway host
-            gateway_host.maxNumberOfVirtualIoTGatewaysSupported = 4
+            gateway_host.maxNumberOfVirtualIoTGatewaysSupported = max_VirtualIoTGatewaysSupportedOnAGatewayHost
             # set the max numbers of virtual IoT devices that can be assigned to a single virtual gateway
-            max_number_iot_devices_supported_in_virtual_gateway = 50
+            max_number_iot_devices_supported_in_virtual_gateway = self.max_devices_assigned_to_a_virtual_gateway
             print ('Physical Gateway Host ' + gateway_host.NodeName + ' will support ' + str (
                 gateway_host.maxNumberOfVirtualIoTGatewaysSupported * max_number_iot_devices_supported_in_virtual_gateway) + ' IoTdevices')
 
@@ -247,18 +245,26 @@ class IoTExperimentLinear(IoTExperiment):
                 # register the  virtual gateway to the physical gateway host
                 gateway_host.addVirtualGateway (new_iot_camera_gateway)
 
-        print ('---------------------------------Done creating IoTGateways')
+        print ('.....................................Done configuring producer hosts and creating Virtual IoT Gateways')
 
-        print ('---------------------------------Starting the monitors')
+
+
+    def __executeWorkload(self):
+
+
+        print('........................................................................Starting New Experiment Session')
+        '''
+              SMART TESTING LINEAR INCREASE EXPERIMENT
+        '''
+
+        print('..................................................................................Starting the monitors')
         self.IoTLinearMonitorManager.startAllMonitors()
         time.sleep (10)
 
-        # Step 2: Create the virtual sensors
-        '''
-        SMART TESTING LINEAR INCREASE EXPERIMENT
-        '''
+        # Step 1: Create the virtual sensors
 
-        print ('---------------------------------Starting Linear Increase Experiment')
+
+        print ('...................................................................Starting Linear Increase Experiment')
 
         DeviceService = IoTDeviceService()
 
@@ -316,7 +322,7 @@ class IoTExperimentLinear(IoTExperiment):
 
     def __cleanUp(self):
         print ('Experiment over starting clean up')
-        experiment_run_time_seconds = 3600
+        experiment_run_time_seconds = 600
         time.sleep (experiment_run_time_seconds)
         print ('End Experiment')
 

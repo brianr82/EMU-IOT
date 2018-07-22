@@ -46,6 +46,12 @@ class IoTLoadBalancer:
                 virtual_iot_gateway_node_list.append(node)
         return virtual_iot_gateway_node_list
 
+    def getIoTHostProducerList(self):
+        iot_Producer_node_list = []
+        for node in self.parent_IoTNetwork.IoTNodeList:
+            if isinstance (node, IoTProducerHost):
+                iot_Producer_node_list.append(node)
+        return iot_Producer_node_list
 
     def remove_all_iot_devices(self):
         for node in self.parent_IoTNetwork.IoTNodeList:

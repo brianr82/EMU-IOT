@@ -6,7 +6,7 @@ class IoTProducerHost(IoTNode):
     def __init__(self, NodeType,NodeName,NodeDockerRemoteClient,NodeIPAddress,NodeDockerPort,*boundNode):
         IoTNode.__init__(self, NodeType,NodeName,NodeDockerRemoteClient,NodeIPAddress,NodeDockerPort,*boundNode)
         self.virtualIoTDeviceList = []
-        self.max_allowed_iot_devices_on_this_host = 200
+        self.max_allowed_iot_devices_on_this_host = 0
         self.IoTDeviceCounter = 0
 
     def addVirtualIoTDevice(self,new_iot_device_to_add,BoundIoTVirtualGateway):
