@@ -31,6 +31,8 @@ class IoTExperimentLinear(IoTExperiment):
 
         self.IoTLinearLoadbalancer = None
         self.IoTLinearMonitorManager = None
+        self.DeviceService = None
+        self.monitor_to_check = None
 
 
 
@@ -192,6 +194,13 @@ class IoTExperimentLinear(IoTExperiment):
         # make the monitor usable outside the method
         self.IoTLinearMonitorManager = MonitorManager
 
+        # set the monitor that you want to use to find the bottleneck
+        # loop through list and find the monitor you need
+        for monitor in self.IoTLinearMonitorManager.IoTMonitorList:
+            if monitor.MonitorType == self.ApplicationToMonitor:
+                self.monitor_to_check = monitor
+
+
     def __IoTNodeSetup(self):
         print ('............................................Configuring producer hosts and activating virtual gateways')
         # Step 1: Configure Producer Hosts
@@ -245,6 +254,12 @@ class IoTExperimentLinear(IoTExperiment):
                 # register the  virtual gateway to the physical gateway host
                 gateway_host.addVirtualGateway (new_iot_camera_gateway)
 
+                #start the Device Service
+                self.DeviceService = IoTDeviceService ()
+
+
+
+
         print ('.....................................Done configuring producer hosts and creating Virtual IoT Gateways')
 
 
@@ -266,33 +281,29 @@ class IoTExperimentLinear(IoTExperiment):
 
         print ('...................................................................Starting Linear Increase Experiment')
 
-        DeviceService = IoTDeviceService()
 
-        monitor_to_check = None
-        target_cpu_percentage = self.TargetUtilization
 
-        # loop through list and find the monitor you need
-        for monitor in self.IoTLinearMonitorManager.IoTMonitorList:
-            if monitor.MonitorType == self.ApplicationToMonitor:
-                monitor_to_check = monitor
+
+
+
+
 
         reading_cycles = 3
 
         search_for_target_usage = True
 
-        while (search_for_target_usage):
+        while search_for_target_usage:
 
-            if monitor_to_check.hostCPUUsage > target_cpu_percentage:
+            if self.monitor_to_check.hostCPUUsage > self.targetCPUUtilization:
                 # sleep for n seconds to get second reading to ignore spikes and try again
                 print ('cpu threshold has been reached, but I will try ' + str (
                     reading_cycles) + ' cycles and check again to make sure')
                 not_able_to_create = True
                 for f in range (0, reading_cycles):
                     time.sleep (5)
-                    if monitor_to_check.hostCPUUsage < target_cpu_percentage:
-                        print (str (monitor_to_check.MonitorType) + ' usage is ' + str (
-                            monitor_to_check.hostCPUUsage) + '% I can continue, was only a cpu blip')
-                        DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.temperature, self.IoTLinearMonitorManager)
+                    if self.monitor_to_check.hostCPUUsage < self.targetCPUUtilization:
+                        print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue, was only a cpu blip')
+                        self.__generateTestCase()
                         not_able_to_create = False
                         break
 
@@ -304,15 +315,14 @@ class IoTExperimentLinear(IoTExperiment):
 
             else:
 
-                print (str (monitor_to_check.MonitorType) + ' usage is ' + str (
-                    monitor_to_check.hostCPUUsage) + '% I can continue')
-
-                # loop through list and find kafka monitor
-                DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.temperature, self.IoTLinearMonitorManager)
+                print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
+                self.__generateTestCase ()
 
 
 
+    def __generateTestCase(self):
 
+        self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.temperature, self.IoTLinearMonitorManager)
 
 
 

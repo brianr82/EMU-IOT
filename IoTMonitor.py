@@ -2,6 +2,7 @@ import json
 from collections import namedtuple
 import time
 from csv import DictWriter
+import pandas as pd
 
 
 class IoTMonitor:
@@ -18,6 +19,8 @@ class IoTMonitor:
         self.ActiveProducers = 0
         self.fileHeaderWritten = False
         self.hostCPUUsage = 0
+        self.hostCPUUsageReadings = []
+        self.hostCPUUsageMovingAverage = 0
 
     def calculateCPUPercentUnix(self, jsondata):
         cpuPercent = 0.0
@@ -101,6 +104,7 @@ class IoTMonitor:
 
                     print ('!!!!!!!!!!!!!!!!!!!!!!'+ str(aggregate_cpu))
 
+
                     throughput = self.calculateThroughput(b)
                     print ('Sent (kb/sec)\t' + str(throughput['tx_delta']))
                     print ('Received (kb/sec)\t' + str(throughput['rx_delta']))
@@ -135,6 +139,18 @@ class IoTMonitor:
 
             #write host level stats
             self.hostCPUUsage = round(aggregate_cpu,2)  # return the total cpu usage for this monitor ie, this host
+            self.hostCPUUsageReadings.append(self.hostCPUUsage)
+
+            # calculate and update moving average
+            df = pd.DataFrame (self.hostCPUUsageReadings)
+
+            #get the last element
+            moving_list = df.rolling (window=12).mean()
+            index = len (moving_list) - 1
+            self.hostCPUUsageMovingAverage = round(moving_list.iloc[index][0],2)
+            print ('............CPU Moving Average ' + str(self.hostCPUUsageMovingAverage))
+            print (self.hostCPUUsageReadings)
+
         return
 
 

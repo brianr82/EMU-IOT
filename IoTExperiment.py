@@ -8,7 +8,7 @@ class IoTExperiment(object):
 
         self.ExperimentName = None
         self.ApplicationToMonitor = None
-        self.targetUtilization = None
+        self.targetCPUUtilization = None
         self.max_devices_on_a_producer_host = None
         self.max_devices_assigned_to_a_virtual_gateway = None
 
@@ -19,8 +19,8 @@ class IoTExperiment(object):
         assert isinstance(ApplicationToMonitor,IoTMonitorType)
         self.ApplicationToMonitor = ApplicationToMonitor
 
-    def setTargetUtilization(self,TargetUtilization):
-        self.TargetUtilization = TargetUtilization
+    def setTargetCPUUtilization(self,targetCPUUtilization):
+        self.targetCPUUtilization = targetCPUUtilization
 
     def set_max_devices_on_a_producer_host(self, max_devices_on_a_producer_host):
         self.max_devices_on_a_producer_host = max_devices_on_a_producer_host
@@ -52,4 +52,7 @@ class IoTExperiment(object):
     def __executeWorkload(self):
         pass
 
+    @abstractmethod
+    def __generateTestCase(self):
+        pass
 
