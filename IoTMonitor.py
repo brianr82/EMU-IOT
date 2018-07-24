@@ -153,6 +153,95 @@ class IoTMonitor:
 
         return
 
+    def getUpdatedStatsSingle(self):
+
+            aggregate_cpu = 0
+            all_containers = self.dockerClientToMonitor.containers.list (all)
+            for container in all_containers:
+                y = container.stats (decode=True, stream=False)
+                # print y
+                r = json.dumps (y)
+                b = json.loads (r)
+                # b = json.loads(y, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+                # print b
+
+                if self.previousCPU == 0.0:
+                    # self.previousCPU = b.precpu_stats.cpu_usage.total_usage
+                    self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
+                else:
+                    print ('----------------------------------------------------')
+                    print ('ResultFileName\t' + self.resultFileName)
+                    print ('Container Name:' + container.name)
+                    print ('Container count\t' + str (len (self.dockerClientToMonitor.containers.list (all))))
+                    # print 'Read Timestamp\t' + b.read
+                    print ('Read Timestamp\t' + b['read'])
+                    print ('Active Producers\t' + str (self.ActiveProducers))
+                    # print 'MEM USAGE / LIMIT\t' + str(self.sizeof_fmt(b.memory_stats.usage)) + ' ' + str(self.sizeof_fmt(b.memory_stats.limit))
+
+                    print ('MEM USAGE / LIMIT\t' + str (self.sizeof_fmt (b['memory_stats']['usage'])) + ' ' + str (
+                        self.sizeof_fmt (b['memory_stats']['limit'])))
+                    print ('MEM %\t' + str (
+                        round (float (b['memory_stats']['usage']) / float (b['memory_stats']['limit']) * 100, 2)))
+
+                    # self.previousCPU = b['precpu_stats']['cpu_usage']['total_usage']
+                    # self.previousSystem = b['precpu_stats']['system_cpu_usage']
+
+                    container_cpu = self.calculateCPUPercentUnix (b)
+                    print ('CPU %\t' + str (container_cpu))
+
+                    aggregate_cpu = aggregate_cpu + container_cpu
+
+                    print ('!!!!!!!!!!!!!!!!!!!!!!' + str (aggregate_cpu))
+
+                    throughput = self.calculateThroughput (b)
+                    print ('Sent (kb/sec)\t' + str (throughput['tx_delta']))
+                    print ('Received (kb/sec)\t' + str (throughput['rx_delta']))
+
+                    self.previousRX = b['networks']['eth0']['rx_bytes']
+                    self.previousTX = b['networks']['eth0']['tx_bytes']
+
+                    # Write Data to File
+                    record = [{
+                        'sensor_count': str (self.ActiveProducers),
+                        'name': container.name,
+                        'timestamp': b['read'],
+                        'cpu%': str (self.calculateCPUPercentUnix (b)),
+                        'memory%': str (
+                            round (float (b['memory_stats']['usage']) / float (b['memory_stats']['limit']) * 100, 2)),
+                        'net_receive': str (throughput['rx_delta']),
+                        'net_send': str (throughput['tx_delta']),
+                        'memory_rss%': str (
+                            round (float (b['memory_stats']['stats']['rss']) / float (b['memory_stats']['limit']) * 100,
+                                   2)),
+                        'memory_active_anon%': str (round (float (b['memory_stats']['stats']['active_anon']) / float (
+                            b['memory_stats']['limit']) * 100, 2)),
+                        'agg_cpu': str (self.hostCPUUsage),
+                    }]
+
+                    # self.append_experiment_reading_record(record)
+
+                    keys = record[0].keys ()
+                    with open (self.get_result_file_name (), "a") as f:
+                        dict_writer = DictWriter (f, keys, delimiter="\t")
+                        if not self.fileHeaderWritten:
+                            dict_writer.writeheader ()
+                            self.fileHeaderWritten = True
+                        for value in record:
+                            dict_writer.writerow (value)
+
+            # write host level stats
+            self.hostCPUUsage = round (aggregate_cpu, 2)  # return the total cpu usage for this monitor ie, this host
+            self.hostCPUUsageReadings.append (self.hostCPUUsage)
+
+            # calculate and update moving average
+            df = pd.DataFrame (self.hostCPUUsageReadings)
+
+            # get the last element
+            moving_list = df.rolling (window=12).mean ()
+            index = len (moving_list) - 1
+            self.hostCPUUsageMovingAverage = round (moving_list.iloc[index][0], 2)
+            print ('............CPU Moving Average ' + str (self.hostCPUUsageMovingAverage))
+            print (self.hostCPUUsageReadings)
 
 
 
