@@ -1,5 +1,6 @@
 from IoTVirtualGateway import *
 from IoTTemperatureSensor import *
+from IoTCamera import *
 from IoTDeviceType import *
 
 class IoTCameraGateway(IoTVirtualGateway):
@@ -23,7 +24,7 @@ class IoTCameraGateway(IoTVirtualGateway):
 
     def add_iot_device(self,IoTDeviceToBeAdded):
         #Step 1. Check if IotDevice is correct type
-        assert isinstance(IoTDeviceToBeAdded,IoTTemperatureSensor)
+        assert isinstance(IoTDeviceToBeAdded,IoTCamera)
         #Step 2. Check if there is room on this gateway to add one
         if self.checkIfRoomtoAddDevice() == True:
             self.connectedIoTDevices.append(IoTDeviceToBeAdded)

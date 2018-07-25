@@ -284,7 +284,8 @@ class IoTExperimentLinear(IoTExperiment):
                     self.__generateTestCase()
                     not_able_to_create = False
                     break
-                if (not_able_to_create):
+
+                if not_able_to_create:
                     print (
                         'It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
                     break
@@ -305,11 +306,15 @@ class IoTExperimentLinear(IoTExperiment):
             iterations_per_case = 5
             #set the goal state to false because we are about to change the active producer target
             self.TestCaseCompleted = False
-            self.target_active_producers = self.target_active_producers + iterations_per_case
+            #self.target_active_producers = self.target_active_producers + iterations_per_case
 
 
             for i in range(0,iterations_per_case):
                 self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.temperature, self.IoTLinearMonitorManager)
+                self.target_active_producers = self.target_active_producers + 1
+
+                self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.camera, self.IoTLinearMonitorManager)
+                self.target_active_producers = self.target_active_producers + 1
 
             self.TestCaseCounter =  self.TestCaseCounter + 1
             #get the producer count, and update the counter
@@ -322,6 +327,9 @@ class IoTExperimentLinear(IoTExperiment):
                 # wait for time time until the previous test case has been completed
                 print ('Previous Test case has NOT yet completed, sleeping for 5 seconds')
                 time.sleep(5)
+                self.current_active_producers = self.monitor_to_check.ActiveProducers
+                print('Current Active Producers '+str(self.current_active_producers))
+                print ('Active Producers ' + str(self.monitor_to_check.ActiveProducers))
             else:
                 #the current goal is the same as the target goal, the test case is complete, set the flag
                 print ('the current goal is the same as the target goal, the test case is complete, set the flag')

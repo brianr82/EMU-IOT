@@ -24,7 +24,7 @@ class IoTDeviceService():
 
             BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (deviceType)
 
-            producer_prefix = 'simsensor_' + str (self.IoTDeviceCounter) + '_'
+            producer_prefix = 'IoT_temperature_sensor_' + str (self.IoTDeviceCounter) + '_'
 
             IoTDeviceName = destination_producer_host.NodeName + '_' + producer_prefix + str (BoundIoTVirtualGateway.gateway_app_port)
 
@@ -48,14 +48,13 @@ class IoTDeviceService():
             number_of_msg_to_send = 10000000
             producer_device_delay = 1000000
 
-            BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (deviceType.camera)
+            BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (deviceType)
 
-            producer_prefix = 'simsensor_' + str (self.IoTDeviceCounter) + '_'
+            producer_prefix = 'IoT_camera_' + str (self.IoTDeviceCounter) + '_'
 
             IoTDeviceName = destination_producer_host.NodeName + '_' + producer_prefix + str (BoundIoTVirtualGateway.gateway_app_port)
 
-            new_sensor = IoTCamera (IoTDeviceID, IoTDeviceName, IoTProducerBinding, number_of_msg_to_send,
-                                               producer_device_delay)
+            new_sensor = IoTCamera (IoTDeviceID, IoTDeviceName, IoTProducerBinding, number_of_msg_to_send, producer_device_delay)
             # add device to local list
             self.IoTDeviceList.append (new_sensor)
 
