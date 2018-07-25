@@ -261,56 +261,36 @@ class IoTExperimentLinear(IoTExperiment):
 
                 #start the Device Service
                 self.DeviceService = IoTDeviceService ()
-
-
-
-
-        print ('.....................................Done configuring producer hosts and creating Virtual IoT Gateways')
+        print('.....................................Done configuring producer hosts and creating Virtual IoT Gateways')
 
 
 
     def __executeWorkload(self):
-
-
         print('........................................................................Starting New Experiment Session')
-        '''
-              SMART TESTING LINEAR INCREASE EXPERIMENT
-        '''
-
         print('..................................................................................Starting the monitors')
-        #self.IoTLinearMonitorManager.startAllMonitors()
+        self.IoTLinearMonitorManager.startAllMonitors()
         time.sleep (10)
 
         print ('...................................................................Starting Linear Increase Experiment')
-
-        reading_cycles = 3
-
         #execute infinite loop until the target utilization has been reached
         while True:
-                if self.monitor_to_check.hostCPUUsage > self.targetCPUUtilization:
-                    # sleep for n seconds to get second reading to ignore spikes and try again
-                    print ('cpu threshold has been reached, but I will try ' + str (reading_cycles) + ' cycles and check again to make sure')
-                    not_able_to_create = True
-                    for f in range (0, reading_cycles):
-                        time.sleep (5)
-                        self.monitor_to_check.getUpdatedStatsSingle ()
-                        if self.monitor_to_check.hostCPUUsage < self.targetCPUUtilization:
-                            print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue, was only a cpu blip')
-                            self.__generateTestCase()
-                            not_able_to_create = False
-                            break
-
-                    if (not_able_to_create):
-                        print (
-                            'It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
-                        break
-
-
-                else:
-
-                    print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
-
-                    self.__generateTestCase ()
+            if self.monitor_to_check.hostCPUUsage > self.targetCPUUtilization:
+                # sleep for n seconds to get second reading to ignore spikes and try again
+                print ('cpu threshold has been reached, but I will wait collect readings over the next 30 seconds to make sure')
+                not_able_to_create = True
+                time.sleep (30)
+                if self.monitor_to_check.hostCPUUsageMovingAverage < self.targetCPUUtilization:
+                    print (str (self.monitor_to_check.MonitorType) + ' moving average usage is ' + str (self.monitor_to_check.hostCPUUsageMovingAverage) + '% I can continue, was only a cpu blip')
+                    self.__generateTestCase()
+                    not_able_to_create = False
+                    break
+                if (not_able_to_create):
+                    print (
+                        'It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
+                    break
+            else:
+                print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
+                self.__generateTestCase ()
 
 
 
@@ -334,7 +314,7 @@ class IoTExperimentLinear(IoTExperiment):
             self.TestCaseCounter =  self.TestCaseCounter + 1
             #get the producer count, and update the counter
             self.current_active_producers = self.monitor_to_check.ActiveProducers
-            self.monitor_to_check.getUpdatedStatsSingle()
+            #self.monitor_to_check.getUpdatedStatsSingle()
 
         #previous test case has not completed, we sleep and the caller of this function will check try again later to generate a test case
         else:
@@ -346,7 +326,7 @@ class IoTExperimentLinear(IoTExperiment):
                 #the current goal is the same as the target goal, the test case is complete, set the flag
                 print ('the current goal is the same as the target goal, the test case is complete, set the flag')
                 self.TestCaseCompleted = True
-                self.monitor_to_check.getUpdatedStatsSingle()
+                #self.monitor_to_check.getUpdatedStatsSingle()
 
 
 
