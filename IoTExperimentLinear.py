@@ -50,7 +50,7 @@ class IoTExperimentLinear(IoTExperiment):
         self.__IoTNodeSetup()
         self.__startMonitors()
         self.__executeWorkload()
-        self.__executeWorkload()
+        #self.__executeWorkload()
         self.__cleanUp()
 
 
@@ -296,10 +296,8 @@ class IoTExperimentLinear(IoTExperiment):
 
                 if not_able_to_create:
                     print ('It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
-                    for i in range(0,10):
-                        self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
-
-                    self.DeviceServiceCamera.removeVirtualIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
+                    #self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+                    #self.DeviceServiceCamera.removeVirtualIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
                     break
             else:
                 print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
