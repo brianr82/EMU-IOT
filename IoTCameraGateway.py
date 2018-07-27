@@ -1,5 +1,4 @@
 from IoTVirtualGateway import *
-from IoTTemperatureSensor import *
 from IoTCamera import *
 from IoTDeviceType import *
 
