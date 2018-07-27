@@ -22,6 +22,7 @@ from IoTTemperatureSensor import *
 from IoTDeviceType import *
 #from IoTDeviceService import *
 from IoTDeviceServiceTemperature import *
+from IoTDeviceServiceCamera import *
 
 import sys
 
@@ -47,6 +48,8 @@ class IoTExperimentLinear(IoTExperiment):
         self.__configureNetwork()
         self.__configureMonitor()
         self.__IoTNodeSetup()
+        self.__startMonitors()
+        self.__executeWorkload()
         self.__executeWorkload()
         self.__cleanUp()
 
@@ -263,15 +266,20 @@ class IoTExperimentLinear(IoTExperiment):
 
                 #start the Device Service
                 self.DeviceServiceTemperature = IoTDeviceServiceTemperature()
+                self.DeviceServiceCamera = IoTDeviceServiceCamera()
+
         print('.....................................Done configuring producer hosts and creating Virtual IoT Gateways')
 
 
+    def __startMonitors(self):
+        print ('........................................................................Starting New Experiment Session')
+        print ('..................................................................................Starting the monitors')
+        self.IoTLinearMonitorManager.startAllMonitors ()
+        time.sleep (10)
+
 
     def __executeWorkload(self):
-        print('........................................................................Starting New Experiment Session')
-        print('..................................................................................Starting the monitors')
-        self.IoTLinearMonitorManager.startAllMonitors()
-        time.sleep (10)
+
 
         print ('...................................................................Starting Linear Increase Experiment')
         #execute infinite loop until the target utilization has been reached
@@ -288,7 +296,10 @@ class IoTExperimentLinear(IoTExperiment):
 
                 if not_able_to_create:
                     print ('It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
-                    self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+                    for i in range(0,10):
+                        self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+
+                    self.DeviceServiceCamera.removeVirtualIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
                     break
             else:
                 print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
@@ -311,8 +322,8 @@ class IoTExperimentLinear(IoTExperiment):
                 self.DeviceServiceTemperature.addVirutalIoTDevice (self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
                 self.target_active_producers = self.target_active_producers + 1
 
-                #self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.camera, self.IoTLinearMonitorManager)
-                #self.target_active_producers = self.target_active_producers + 1
+                self.DeviceServiceCamera.addVirutalIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
+                self.target_active_producers = self.target_active_producers + 1
 
             self.TestCaseCounter =  self.TestCaseCounter + 1
             #get the producer count, and update the counter

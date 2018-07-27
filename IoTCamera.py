@@ -27,3 +27,9 @@ class IoTCamera(IoTDevice):
         new_container = self.IoTProducerBinding.NodeDockerRemoteClient.containers.get(self.IoTDeviceName)
         print ('Created Container\t' + new_container.name)
 
+    def removeVirtualIoTSensor(self):
+
+        existing_container = self.IoTProducerBinding.NodeDockerRemoteClient.containers.get(self.IoTDeviceName)
+        existing_container.kill()
+        existing_container.remove()
+        print ('Removed Container:\t' + existing_container.name)
