@@ -227,6 +227,7 @@ class IoTExperimentLinear(IoTExperiment):
                 gateway_host.maxNumberOfVirtualIoTGatewaysSupported * max_number_iot_devices_supported_in_virtual_gateway) + ' IoTdevices')
 
             start_remote_port_range = 3000
+            start_camera_port_range = 10
             end_remote_port_range = start_remote_port_range + gateway_host.maxNumberOfVirtualIoTGatewaysSupported
 
             for port_number in range (start_remote_port_range, end_remote_port_range):
@@ -244,8 +245,8 @@ class IoTExperimentLinear(IoTExperiment):
 
                 print ('Creating Camera Gateway')
                 # create the each virtual gateway
-                new_iot_camera_gateway = IoTCameraGateway (receiver_prefix + '_receiver_' + str (port_number + 10),
-                                                           port_number + 10,
+                new_iot_camera_gateway = IoTCameraGateway (receiver_prefix + '_receiver_' + str (port_number + start_camera_port_range),
+                                                           port_number + start_camera_port_range,
                                                            max_number_iot_devices_supported_in_virtual_gateway,
                                                            gateway_host, IoTDeviceType.camera)
                 # create the actual docker container
