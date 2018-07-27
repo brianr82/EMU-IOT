@@ -1,92 +1,38 @@
-from IoTDeviceType import *
-from IoTTemperatureSensor import IoTTemperatureSensor
-from IoTCamera import *
+from abc import ABCMeta, abstractmethod
 
 
-class IoTDeviceService():
+class IoTDeviceService(object):
+    __metaclass__ = ABCMeta
     def __init__(self):
-        self.IoTDeviceList_temperature = []
-        self.IoTDeviceCounter_temperature = 1
+        self.IoTDeviceList = []
+        self.IoTDeviceCounter = 1
 
-        self.IoTDeviceList_camera = []
-        self.IoTDeviceCounter_camera = 1
-
-
-    def addVirutalIoTDevice(self, IoTLoadBalancer, deviceType, MonitorManager):
-
-        destination_producer_host = IoTLoadBalancer.get_target_iot_device_edge ('create')
-        IoTProducerBinding = destination_producer_host
-        IoTDeviceID = 'test'
-
-
-        #Temperature sensor implementation
-        if deviceType == IoTDeviceType.temperature:
-            #virtual device options(i.e. the params passed to the docker container when its created)
-            number_of_msg_to_send = 10000000
-            producer_device_delay = 1000000
-
-            BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (deviceType)
-
-            producer_prefix = 'IoT_temperature_sensor_' + str (self.IoTDeviceCounter) + '_'
-
-            IoTDeviceName = destination_producer_host.NodeName + '_' + producer_prefix + str (BoundIoTVirtualGateway.gateway_app_port)
-
-            new_sensor = IoTTemperatureSensor (IoTDeviceID, IoTDeviceName, IoTProducerBinding, number_of_msg_to_send,
-                                           producer_device_delay)
-            #add device to list
-            self.IoTDeviceList_temperature.append(new_sensor)
-            # Start the sensor
-
-            new_sensor.createVirtualIoTSensor ()
-
-            # add device to producer host
-            IoTProducerBinding.addVirtualIoTDevice (new_sensor, BoundIoTVirtualGateway)
-
-
-
-
-        '''TO BE CHANGED WHEN CAMERA IS IMPLEMENTED'''
-        if deviceType == IoTDeviceType.camera:
-            # virtual device options(i.e. the params passed to the docker container when its created)
-            number_of_msg_to_send = 10000000
-            producer_device_delay = 1000000
-
-            BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (deviceType)
-
-            producer_prefix = 'IoT_camera_' + str (self.IoTDeviceCounter) + '_'
-
-            IoTDeviceName = destination_producer_host.NodeName + '_' + producer_prefix + str (BoundIoTVirtualGateway.gateway_app_port)
-
-            new_sensor = IoTCamera (IoTDeviceID, IoTDeviceName, IoTProducerBinding, number_of_msg_to_send, producer_device_delay)
-            # add device to local list
-            self.IoTDeviceList_camera.append (new_sensor)
-
-            # Start the sensor
-
-            new_sensor.createVirtualIoTSensor ()
-
-            # add device to producer host
-            IoTProducerBinding.addVirtualIoTDevice (new_sensor, BoundIoTVirtualGateway)
-
-
-
-
-        #increment local device counter
-        self.incrementDeviceCounter ()
-        # update the monitor
-        MonitorManager.updateActiveProducerCount (IoTLoadBalancer)
-
-
-
-    def removeVirtualIoTDevice(self, IoTLoadBalancer, deviceType, MonitorManager):
+    @abstractmethod
+    def addVirutalIoTDevice(self, IoTLoadBalancer, MonitorManager):
         pass
 
 
+    def removeVirtualIoTDevice(self, IoTLoadBalancer, MonitorManager):
+        if len(self.IoTDeviceList)== 0:
+            print ('No more devices to remove!')
+        else:
 
-    def incrementDeviceCounter(self,deviceType):
-        self.IoTDeviceCounter =  self.IoTDeviceCounter + 1
+            # update all local lists
+            removed_Iot_device = self.IoTDeviceList.pop ()
+            self.decrementDeviceCounter ()
+
+            # destroy the container
+            removed_Iot_device.removeVirtualIoTSensor ()
+
+            # remove the iot device from the Producer host and the virtual gateway
+            removed_Iot_device.IoTProducerBinding.removeVirtualIoTDevice (removed_Iot_device)
+
+            # update the monitor
+            MonitorManager.updateActiveProducerCount (IoTLoadBalancer)
 
 
     def incrementDeviceCounter(self):
-        self.IoTDeviceCounter =  self.IoTDeviceCounter + 1
+        self.IoTDeviceCounter = self.IoTDeviceCounter + 1
 
+    def decrementDeviceCounter(self):
+        self.IoTDeviceCounter = self.IoTDeviceCounter - 1

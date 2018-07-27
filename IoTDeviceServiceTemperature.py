@@ -1,13 +1,11 @@
 from IoTDeviceType import *
 from IoTTemperatureSensor import IoTTemperatureSensor
-from IoTCamera import *
+from IoTDeviceService import *
 
 
-class IoTDeviceServiceTemperature():
+class IoTDeviceServiceTemperature(IoTDeviceService):
     def __init__(self):
-        self.IoTDeviceList = []
-        self.IoTDeviceCounter = 1
-
+        IoTDeviceService.__init__(self)
 
     def addVirutalIoTDevice(self, IoTLoadBalancer, MonitorManager):
 
@@ -44,29 +42,3 @@ class IoTDeviceServiceTemperature():
         self.incrementDeviceCounter()
         # update the monitor
         MonitorManager.updateActiveProducerCount(IoTLoadBalancer)
-
-
-
-
-    def removeVirtualIoTDevice(self, IoTLoadBalancer, MonitorManager):
-
-        #update all local lists
-        removed_Iot_device = self.IoTDeviceList.pop()
-        self.decrementDeviceCounter()
-
-        #destroy the container
-        removed_Iot_device.removeVirtualIoTSensor()
-
-        #remove the iot device from the Producer host and the virtual gateway
-        removed_Iot_device.IoTProducerBinding.removeVirtualIoTDevice(removed_Iot_device)
-
-        # update the monitor
-        MonitorManager.updateActiveProducerCount (IoTLoadBalancer)
-
-
-
-    def incrementDeviceCounter(self):
-        self.IoTDeviceCounter = self.IoTDeviceCounter + 1
-
-    def decrementDeviceCounter(self):
-        self.IoTDeviceCounter = self.IoTDeviceCounter - 1

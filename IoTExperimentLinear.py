@@ -295,9 +295,9 @@ class IoTExperimentLinear(IoTExperiment):
                     not_able_to_create = False
 
                 if not_able_to_create:
-                    print ('It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
-                    #self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
-                    #self.DeviceServiceCamera.removeVirtualIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
+                    print ('It has been verified, cpu threshold using the moving average has been reached, I will not create more sensors, exiting')
+                    self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+                    self.DeviceServiceCamera.removeVirtualIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
                     break
             else:
                 print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
@@ -339,7 +339,7 @@ class IoTExperimentLinear(IoTExperiment):
                 print ('Active Producers ' + str(self.monitor_to_check.ActiveProducers))
             else:
                 #the current goal is the same as the target goal, the test case is complete, set the flag
-                print ('the current goal is the same as the target goal, the test case is complete, set the flag')
+                print ('The number of active producers is equal to the number of target producers, the test case was completed sucessfully')
                 self.TestCaseCompleted = True
 
 

@@ -21,7 +21,7 @@ class IoTProducerHost(IoTNode):
         self.IoTDeviceCounter  = self.IoTDeviceCounter +1
 
         print ('Producer Host: ' + new_iot_device_to_add.IoTDeviceName + ' added')
-        print ('Producer Host: After adding, the number of devices is: ' + str (self.IoTDeviceCounter))
+        print ('Producer Host: After adding 1 device, the number of devices is: ' + str (self.IoTDeviceCounter))
 
     def removeVirtualIoTDevice(self,existing_iot_device_to_delete):
         #check if its an IoTDevice
@@ -37,4 +37,4 @@ class IoTProducerHost(IoTNode):
 
         #print the result
         print ('Producer Host: ' + existing_iot_device_to_delete.IoTDeviceName + ' removed')
-        print ('Producer Host: After removing, the number of devices is: ' + str(self.IoTDeviceCounter))
+        print ('Producer Host: After removing 1 device, the number of devices is: ' + str(self.IoTDeviceCounter))
