@@ -6,7 +6,7 @@ class IoTProducerHost(IoTNode):
     def __init__(self, NodeType,NodeName,NodeDockerRemoteClient,NodeIPAddress,NodeDockerPort,*boundNode):
         IoTNode.__init__(self, NodeType,NodeName,NodeDockerRemoteClient,NodeIPAddress,NodeDockerPort,*boundNode)
         self.virtualIoTDeviceList = []
-        self.max_allowed_iot_devices_on_this_host = 0
+        self.max_allowed_iot_devices_on_this_host = None #to be set by the run method in the Experiment class
         self.IoTDeviceCounter = 0
 
     def addVirtualIoTDevice(self,new_iot_device_to_add):
@@ -17,7 +17,7 @@ class IoTProducerHost(IoTNode):
         #add device to IotVirtualGateway
         new_iot_device_to_add.BoundIoTVirtualGateway.add_iot_device(new_iot_device_to_add)
 
-        #increment local counter everytime we add, counter will be used to give each new device a unique id
+        #increment local counter everytime we add
         self.IoTDeviceCounter  = self.IoTDeviceCounter +1
 
         print ('Producer Host: ' + new_iot_device_to_add.IoTDeviceName + ' added')

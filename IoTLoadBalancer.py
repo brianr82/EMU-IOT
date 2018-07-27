@@ -75,49 +75,12 @@ class IoTLoadBalancer:
 
 
 
-    def get_target_iot_device_edge(self, action):
-
-
-        if self.distribution_policy == 'random':
-            producer_host_node_list = []
-            # if the action is to create we need to find IoT producer node that can take it
-            if action == 'create':
-                for node in self.parent_IoTNetwork.IoTNodeList:
-                    # check to see if the node is less than the max the edge can handle
-                    if isinstance(node, IoTProducerHost) and getContainerCount(node.NodeDockerRemoteClient) < IoTProducerHost.max_allowed_iot_devices_on_this_host:
-                        producer_host_node_list.append(node)
-
-                # choose one at random
-                selected_random_node = random.choice(producer_host_node_list)
-                selected_edge = selected_random_node
-                return selected_edge
-            # if the action is to destroy at random we need to find any IoT sensor
-            if action == 'destroy':
-                for node in self.parent_IoTNetwork.IoTNodeList:
-                    # check to see if the node has at least one sensor on it, if it does add it to the list of choices
-                    if isinstance(node, IoTProducerHost) and getContainerCount(node.NodeDockerRemoteClient) > 0:
-                        producer_host_node_list.append(node)
-                # choose one IoT node at random
-                selected_random_node = random.choice(producer_host_node_list)
-                selected_edge = selected_random_node
-                return selected_edge
-
-
-        # policy for filling each producer host in order of instantiation
-        if self.distribution_policy == 'fill_first':
-            if action == 'create':
-                for found_node in self.parent_IoTNetwork.IoTNodeList:
-                    # check to see if the node is less than the max the edge can handle
-                    if isinstance(found_node, IoTProducerHost) and getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host:
-                        return found_node
-
-            if action == 'destroy':
-                for found_node in self.parent_IoTNetwork.IoTNodeList:
-                    # check to see if the node is less than the max the edge can handle
-                    if isinstance(found_node, IoTProducerHost) and getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host:
-                        return found_node
-
-
+    def get_free_IoTProducerHost(self):
+        for found_node in self.parent_IoTNetwork.IoTNodeList:
+            # check to see if the node is less than the max the edge can handle
+            if isinstance(found_node, IoTProducerHost) and (getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host):
+                #print('I found Producer node: ' + found_node.NodeName + 'it has a capacity of: ' +str(found_node.max_allowed_iot_devices_on_this_host))
+                return found_node
 
 
 

@@ -102,7 +102,7 @@ class IoTMonitor:
 
                     aggregate_cpu = aggregate_cpu + container_cpu
 
-                    print ('!!!!!!!!!!!!!!!!!!!!!!'+ str(aggregate_cpu))
+                    print ('AGG CPU %\t' + str(aggregate_cpu))
 
 
                     throughput = self.calculateThroughput(b)
