@@ -2,29 +2,18 @@ from IoTExperiment import *
 
 
 import docker
-import time
-import datetime
 
-
-from IoTNode import *
 from IoTMonitorManager import *
 from IoTApplicationHost import *
-from receiver import *
 from IoTMonitor import *
 from threading import Thread
-from IoTDockerController import *
-from SensorPair import *
-from IoTNetwork import *
+#from OLD.IoTDockerController import *
 from IoTLoadBalancer import *
 from IoTTemperatureGateway import *
 from IoTCameraGateway import *
-from IoTTemperatureSensor import *
-from IoTDeviceType import *
 #from IoTDeviceService import *
 from IoTDeviceServiceTemperature import *
 from IoTDeviceServiceCamera import *
-
-import sys
 
 
 class IoTExperimentLinear(IoTExperiment):

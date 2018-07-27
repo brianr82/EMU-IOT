@@ -1,11 +1,8 @@
 import docker
-import time
-import datetime
-from receiver import *
-from IoTMonitor import *
+from OLD.receiver import *
 from threading import Thread
-from IoTDockerController import *
-from SensorPair import *
+from OLD.IoTDockerController import *
+from OLD.SensorPair import *
 
 
 

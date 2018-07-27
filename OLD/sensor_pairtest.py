@@ -1,5 +1,5 @@
-from SensorPair import *
-from receiver import *
+from OLD.SensorPair import *
+from OLD.receiver import *
 
 sensor_pair_list = []
 

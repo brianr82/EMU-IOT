@@ -1,10 +1,6 @@
 from IoTNetwork import *
-import IoTNode
 from IoTGatewayHost import IoTGatewayHost
 from IoTProducerHost import IoTProducerHost
-from IoTDockerController import stopAndRemoveContainers
-from IoTDockerController import getContainerCount
-import random
 
 
 class IoTLoadBalancer:
@@ -57,13 +53,24 @@ class IoTLoadBalancer:
         for node in self.parent_IoTNetwork.IoTNodeList:
             if isinstance(node, IoTProducerHost):
                 #if i.NodeType == 'IoT_Device_Host':
-                stopAndRemoveContainers(node.NodeDockerRemoteClient)
+                self.__stopAndRemoveContainers(node.NodeDockerRemoteClient)
 
 
     def remove_all_gateways(self):
         for node in self.parent_IoTNetwork.IoTNodeList:
             if isinstance (node, IoTGatewayHost):
-                stopAndRemoveContainers(node.NodeDockerRemoteClient)
+                self.__stopAndRemoveContainers(node.NodeDockerRemoteClient)
+
+    def __stopAndRemoveContainers(self,client_manager):
+
+        # stop created containers
+        for container in client_manager.containers.list (all):
+            print ('Stopping container\t' + container.name)
+            if container.status != 'running':
+                container.remove ()
+            else:
+                container.kill ()
+                container.remove ()
 
 
     def set_distribution_policy_balanced(self):
@@ -78,11 +85,13 @@ class IoTLoadBalancer:
     def get_free_IoTProducerHost(self):
         for found_node in self.parent_IoTNetwork.IoTNodeList:
             # check to see if the node is less than the max the edge can handle
-            if isinstance(found_node, IoTProducerHost) and (getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host):
+            if isinstance(found_node, IoTProducerHost) and (self.__getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host):
                 #print('I found Producer node: ' + found_node.NodeName + 'it has a capacity of: ' +str(found_node.max_allowed_iot_devices_on_this_host))
                 return found_node
 
-
+    def __getContainerCount(self,client_manager):
+        container_list = client_manager.containers.list (all)
+        return len (container_list)
 
     def iot_network_cleanup(self):
         print ('IoT_Device Count  is ', self.get_current_iot_device_count())
