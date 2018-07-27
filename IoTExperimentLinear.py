@@ -20,7 +20,8 @@ from IoTTemperatureGateway import *
 from IoTCameraGateway import *
 from IoTTemperatureSensor import *
 from IoTDeviceType import *
-from IoTDeviceService import *
+#from IoTDeviceService import *
+from IoTDeviceServiceTemperature import *
 
 import sys
 
@@ -31,7 +32,8 @@ class IoTExperimentLinear(IoTExperiment):
 
         self.IoTLinearLoadbalancer = None
         self.IoTLinearMonitorManager = None
-        self.DeviceService = None
+        self.DeviceServiceTemperature = None
+        self.DeviceServiceCamera = None
         self.monitor_to_check = None
         self.TestCaseCompleted = True
         self.TestCaseCounter = 0
@@ -260,7 +262,7 @@ class IoTExperimentLinear(IoTExperiment):
                 gateway_host.addVirtualGateway (new_iot_camera_gateway)
 
                 #start the Device Service
-                self.DeviceService = IoTDeviceService ()
+                self.DeviceServiceTemperature = IoTDeviceServiceTemperature()
         print('.....................................Done configuring producer hosts and creating Virtual IoT Gateways')
 
 
@@ -283,11 +285,10 @@ class IoTExperimentLinear(IoTExperiment):
                     print (str (self.monitor_to_check.MonitorType) + ' moving average usage is ' + str (self.monitor_to_check.hostCPUUsageMovingAverage) + '% I can continue, was only a cpu blip')
                     self.__generateTestCase()
                     not_able_to_create = False
-                    break
 
                 if not_able_to_create:
-                    print (
-                        'It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
+                    print ('It has been verified, cpu threshold has been reached, I will not create more sensors, exiting')
+                    self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
                     break
             else:
                 print (str (self.monitor_to_check.MonitorType) + ' usage is ' + str (self.monitor_to_check.hostCPUUsage) + '% I can continue')
@@ -306,20 +307,17 @@ class IoTExperimentLinear(IoTExperiment):
             iterations_per_case = 5
             #set the goal state to false because we are about to change the active producer target
             self.TestCaseCompleted = False
-            #self.target_active_producers = self.target_active_producers + iterations_per_case
-
-
             for i in range(0,iterations_per_case):
-                self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.temperature, self.IoTLinearMonitorManager)
+                self.DeviceServiceTemperature.addVirutalIoTDevice (self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
                 self.target_active_producers = self.target_active_producers + 1
 
-                self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.camera, self.IoTLinearMonitorManager)
-                self.target_active_producers = self.target_active_producers + 1
+                #self.DeviceService.addVirutalIoTDevice (self.IoTLinearLoadbalancer, IoTDeviceType.camera, self.IoTLinearMonitorManager)
+                #self.target_active_producers = self.target_active_producers + 1
 
             self.TestCaseCounter =  self.TestCaseCounter + 1
             #get the producer count, and update the counter
             self.current_active_producers = self.monitor_to_check.ActiveProducers
-            #self.monitor_to_check.getUpdatedStatsSingle()
+
 
         #previous test case has not completed, we sleep and the caller of this function will check try again later to generate a test case
         else:
@@ -334,7 +332,7 @@ class IoTExperimentLinear(IoTExperiment):
                 #the current goal is the same as the target goal, the test case is complete, set the flag
                 print ('the current goal is the same as the target goal, the test case is complete, set the flag')
                 self.TestCaseCompleted = True
-                #self.monitor_to_check.getUpdatedStatsSingle()
+
 
 
 

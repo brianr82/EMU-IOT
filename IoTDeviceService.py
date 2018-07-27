@@ -5,8 +5,11 @@ from IoTCamera import *
 
 class IoTDeviceService():
     def __init__(self):
-        self.IoTDeviceList = []
-        self.IoTDeviceCounter = 1
+        self.IoTDeviceList_temperature = []
+        self.IoTDeviceCounter_temperature = 1
+
+        self.IoTDeviceList_camera = []
+        self.IoTDeviceCounter_camera = 1
 
 
     def addVirutalIoTDevice(self, IoTLoadBalancer, deviceType, MonitorManager):
@@ -31,7 +34,7 @@ class IoTDeviceService():
             new_sensor = IoTTemperatureSensor (IoTDeviceID, IoTDeviceName, IoTProducerBinding, number_of_msg_to_send,
                                            producer_device_delay)
             #add device to list
-            self.IoTDeviceList.append(new_sensor)
+            self.IoTDeviceList_temperature.append(new_sensor)
             # Start the sensor
 
             new_sensor.createVirtualIoTSensor ()
@@ -56,7 +59,7 @@ class IoTDeviceService():
 
             new_sensor = IoTCamera (IoTDeviceID, IoTDeviceName, IoTProducerBinding, number_of_msg_to_send, producer_device_delay)
             # add device to local list
-            self.IoTDeviceList.append (new_sensor)
+            self.IoTDeviceList_camera.append (new_sensor)
 
             # Start the sensor
 
@@ -75,8 +78,13 @@ class IoTDeviceService():
 
 
 
-    def removeVirtualIoTDevice(self):
+    def removeVirtualIoTDevice(self, IoTLoadBalancer, deviceType, MonitorManager):
         pass
+
+
+
+    def incrementDeviceCounter(self,deviceType):
+        self.IoTDeviceCounter =  self.IoTDeviceCounter + 1
 
 
     def incrementDeviceCounter(self):

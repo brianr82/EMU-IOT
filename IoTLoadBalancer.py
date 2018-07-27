@@ -111,7 +111,11 @@ class IoTLoadBalancer:
                     if isinstance(found_node, IoTProducerHost) and getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host:
                         return found_node
 
-
+            if action == 'destroy':
+                for found_node in self.parent_IoTNetwork.IoTNodeList:
+                    # check to see if the node is less than the max the edge can handle
+                    if isinstance(found_node, IoTProducerHost) and getContainerCount(found_node.NodeDockerRemoteClient) < found_node.max_allowed_iot_devices_on_this_host:
+                        return found_node
 
 
 

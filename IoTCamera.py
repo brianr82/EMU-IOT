@@ -5,8 +5,8 @@ from IoTDeviceType import *
 
 
 class IoTCamera(IoTDevice):
-    def __init__(self,IoTDeviceID,IoTDeviceName,IoTProducerBinding,number_of_msg_to_send,producer_device_delay):
-        IoTDevice.__init__ (self,IoTDeviceID,IoTDeviceName,IoTProducerBinding)
+    def __init__(self,IoTDeviceID,IoTDeviceName,IoTProducerBinding,BoundIoTVirtualGateway,number_of_msg_to_send,producer_device_delay):
+        IoTDevice.__init__ (self,IoTDeviceID,IoTDeviceName,IoTProducerBinding,BoundIoTVirtualGateway)
         #get the ip address of the gateway that is bound to the producer host
         self.destination_gateway_ip = self.IoTProducerBinding.boundNode.NodeIPAddress
         #get the port number for the  a virtual gateway
