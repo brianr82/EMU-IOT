@@ -14,7 +14,7 @@ class IoTTemperatureSensor(IoTDevice):
         self.number_of_msg_to_send = number_of_msg_to_send
         self.producer_device_delay = producer_device_delay
         self.BoundIoTVirtualGateway = BoundIoTVirtualGateway
-        self.dockerContainer = None
+
 
     def createVirtualIoTSensor(self):
         self.IoTProducerBinding.NodeDockerRemoteClient.containers.run("brianr82/sensorsim:latest", \
