@@ -277,7 +277,7 @@ class IoTExperimentLinear(IoTExperiment):
                 # sleep for n seconds to get second reading to ignore spikes and try again
                 print ('cpu threshold has been reached, but I will wait collect readings over the next 30 seconds to make sure')
                 not_able_to_create = True
-                time.sleep (30)
+                time.sleep (60)
                 if self.monitor_to_check.hostCPUUsageMovingAverage < self.targetCPUUtilization:
                     print (str (self.monitor_to_check.MonitorType) + ' moving average usage is ' + str (self.monitor_to_check.hostCPUUsageMovingAverage) + '% I can continue, was only a cpu blip')
                     self.__generateTestCase()
@@ -324,15 +324,19 @@ class IoTExperimentLinear(IoTExperiment):
                 print ('Previous Test case has NOT yet completed, sleeping for 5 seconds')
                 time.sleep(5)
                 self.current_active_producers = self.monitor_to_check.ActiveProducers
-                if self.current_active_producers == self.target_active_producers:
-                    self.TestCaseCompleted == True
+                #if self.current_active_producers == self.target_active_producers:
+                #    self.TestCaseCompleted == True
 
                 print('Current Active Producers '+str(self.current_active_producers))
                 print('Target Active Producers ') + str(self.target_active_producers)
                 print('Monitor Active Producers ' + str(self.monitor_to_check.ActiveProducers))
-            else:
+
+            if self.current_active_producers == self.target_active_producers:
                 #the current goal is the same as the target goal, the test case is complete, set the flag
                 print ('The number of active producers is equal to the number of target producers, the test case was completed sucessfully')
+                print ('Current Active Producers ' + str (self.current_active_producers))
+                print ('Target Active Producers ' + str (self.target_active_producers))
+                print ('Monitor Active Producers ' + str (self.monitor_to_check.ActiveProducers))
                 self.TestCaseCompleted = True
 
 

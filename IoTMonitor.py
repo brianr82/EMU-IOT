@@ -145,7 +145,7 @@ class IoTMonitor:
             df = pd.DataFrame (self.hostCPUUsageReadings)
 
             #get the last element
-            moving_list = df.rolling (window=6).mean()
+            moving_list = df.rolling (window=12).mean()
             index = len (moving_list) - 1
             self.hostCPUUsageMovingAverage = round(moving_list.iloc[index][0],2)
             print ('............CPU Moving Average ' + str(self.hostCPUUsageMovingAverage))
