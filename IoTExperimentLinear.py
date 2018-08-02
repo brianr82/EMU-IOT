@@ -31,6 +31,11 @@ class IoTExperimentLinear(IoTExperiment):
         self.target_active_producers = 0
 
 
+        #test case configs
+        self.temperature_sensors_per_test_case = 0
+        self.camera_sensors_per_test_case = 0
+
+
 
 
     def run(self):
@@ -39,8 +44,25 @@ class IoTExperimentLinear(IoTExperiment):
         self.__IoTNodeSetup()
         self.__startMonitors()
         self.__executeWorkload()
-        #self.__executeWorkload()
         self.__cleanUp()
+
+    def configureExperiment(self,type):
+
+        if type == 'temperature':
+            self.temperature_sensors_per_test_case = 5
+            self.camera_sensors_per_test_case = 0
+            print('Experiment Set to temperature sensors only')
+
+        if type == 'camera':
+            self.temperature_sensors_per_test_case = 0
+            self.camera_sensors_per_test_case = 5
+            print('Experiment Set to camera sensors only')
+
+        if type == 'mix':
+            self.temperature_sensors_per_test_case = 5
+            self.camera_sensors_per_test_case = 1
+            print('Experiment Set to 1 camera + 5 temperature sensors')
+
 
 
     def __configureNetwork(self):
@@ -175,14 +197,14 @@ class IoTExperimentLinear(IoTExperiment):
         # MonitorManager.addMonitor(PiMonitor)
         # MonitorManager.addMonitor(ProducerMonitor)
         #MonitorManager.addMonitor (Spark_Monitor)
-        #MonitorManager.addMonitor (KafkaMonitor)
+        MonitorManager.addMonitor (KafkaMonitor)
         MonitorManager.addMonitor (Cassandra_Monitor)
 
         # add the threads
         # MonitorManager.addThread(Pi_thread)
         # MonitorManager.addThread(ProducerThread)
         #MonitorManager.addThread (Spark_Thread)
-        #MonitorManager.addThread (Kafka_thread)
+        MonitorManager.addThread (Kafka_thread)
         MonitorManager.addThread (Cassandra_Thread)
 
         print (
@@ -302,18 +324,20 @@ class IoTExperimentLinear(IoTExperiment):
         print ('Checking to see if previous test case was completed')
         if self.TestCaseCompleted == True:
             print ('Previous Test case was completed, starting a new one')
-            iterations_per_case = 5
+
             #set the goal state to false because we are about to change the active producer target
             self.TestCaseCompleted = False
-            for i in range(0,iterations_per_case):
-                #self.DeviceServiceTemperature.addVirutalIoTDevice (self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
-                #self.target_active_producers = self.target_active_producers + 1
 
+            '''Generate Temperature Sensors'''
+            for i in range(0,self.temperature_sensors_per_test_case):
+                self.DeviceServiceTemperature.addVirutalIoTDevice (self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+                self.target_active_producers = self.target_active_producers + 1
+            '''Generate Camera Sensors'''
+            for i in range (0, self.camera_sensors_per_test_case):
                 self.DeviceServiceCamera.addVirutalIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
                 self.target_active_producers = self.target_active_producers + 1
 
             self.TestCaseCounter =  self.TestCaseCounter + 1
-            #get the producer count, and update the counter
             self.current_active_producers = self.monitor_to_check.ActiveProducers
 
 
@@ -346,8 +370,8 @@ class IoTExperimentLinear(IoTExperiment):
     def __cleanUp(self):
         print ('Experiment over starting clean up')
         print ('Number of Test Cases Required to Reach Target: ' + str(self.TestCaseCounter))
-        experiment_run_time_seconds = 20
-        time.sleep (experiment_run_time_seconds)
+        experiment_shutdown_delay_seconds = 20
+        time.sleep (experiment_shutdown_delay_seconds)
         print ('End Experiment')
 
         print ('Stopping Monitors')
