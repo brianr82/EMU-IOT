@@ -15,8 +15,8 @@ IoTExperiment = IoTExperimentLinear()
 
 
 IoTExperiment.setExperimentName("Refactor_1")
-IoTExperiment.setApplicationToMonitor(IoTMonitorType.kafka)
-IoTExperiment.setTargetCPUUtilization(12)
+IoTExperiment.setApplicationToMonitor(IoTMonitorType.cassandra)
+IoTExperiment.setTargetCPUUtilization(200)
 IoTExperiment.set_max_devices_on_a_producer_host(200)
 IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
 IoTExperiment.run()

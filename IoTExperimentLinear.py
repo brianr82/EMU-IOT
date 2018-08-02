@@ -175,15 +175,15 @@ class IoTExperimentLinear(IoTExperiment):
         # MonitorManager.addMonitor(PiMonitor)
         # MonitorManager.addMonitor(ProducerMonitor)
         #MonitorManager.addMonitor (Spark_Monitor)
-        MonitorManager.addMonitor (KafkaMonitor)
-        #MonitorManager.addMonitor (Cassandra_Monitor)
+        #MonitorManager.addMonitor (KafkaMonitor)
+        MonitorManager.addMonitor (Cassandra_Monitor)
 
         # add the threads
         # MonitorManager.addThread(Pi_thread)
         # MonitorManager.addThread(ProducerThread)
         #MonitorManager.addThread (Spark_Thread)
-        MonitorManager.addThread (Kafka_thread)
-        #MonitorManager.addThread (Cassandra_Thread)
+        #MonitorManager.addThread (Kafka_thread)
+        MonitorManager.addThread (Cassandra_Thread)
 
         print (
             '*********************************************************************************************************')
@@ -306,8 +306,8 @@ class IoTExperimentLinear(IoTExperiment):
             #set the goal state to false because we are about to change the active producer target
             self.TestCaseCompleted = False
             for i in range(0,iterations_per_case):
-                self.DeviceServiceTemperature.addVirutalIoTDevice (self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
-                self.target_active_producers = self.target_active_producers + 1
+                #self.DeviceServiceTemperature.addVirutalIoTDevice (self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+                #self.target_active_producers = self.target_active_producers + 1
 
                 self.DeviceServiceCamera.addVirutalIoTDevice (self.IoTLinearLoadbalancer, self.IoTLinearMonitorManager)
                 self.target_active_producers = self.target_active_producers + 1
@@ -324,8 +324,12 @@ class IoTExperimentLinear(IoTExperiment):
                 print ('Previous Test case has NOT yet completed, sleeping for 5 seconds')
                 time.sleep(5)
                 self.current_active_producers = self.monitor_to_check.ActiveProducers
+                if self.current_active_producers == self.target_active_producers:
+                    self.TestCaseCompleted == True
+
                 print('Current Active Producers '+str(self.current_active_producers))
-                print ('Active Producers ' + str(self.monitor_to_check.ActiveProducers))
+                print('Target Active Producers ') + str(self.target_active_producers)
+                print('Monitor Active Producers ' + str(self.monitor_to_check.ActiveProducers))
             else:
                 #the current goal is the same as the target goal, the test case is complete, set the flag
                 print ('The number of active producers is equal to the number of target producers, the test case was completed sucessfully')
