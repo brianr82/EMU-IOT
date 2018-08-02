@@ -14,6 +14,7 @@ from IoTCameraGateway import *
 #from IoTDeviceService import *
 from IoTDeviceServiceTemperature import *
 from IoTDeviceServiceCamera import *
+from IoTMonitorType import *
 
 
 class IoTExperimentLinear(IoTExperiment):
@@ -52,17 +53,19 @@ class IoTExperimentLinear(IoTExperiment):
             self.temperature_sensors_per_test_case = 5
             self.camera_sensors_per_test_case = 0
             print('Experiment Set to temperature sensors only')
+            self.setApplicationToMonitor(IoTMonitorType.kafka)
 
         if experiment_type == 'camera':
             self.temperature_sensors_per_test_case = 0
             self.camera_sensors_per_test_case = 5
             print('Experiment Set to camera sensors only')
+            self.setApplicationToMonitor(IoTMonitorType.cassandra)
 
         if experiment_type == 'mix':
             self.temperature_sensors_per_test_case = 5
             self.camera_sensors_per_test_case = 1
             print('Experiment Set to 1 camera + 5 temperature sensors')
-
+            self.setApplicationToMonitor (IoTMonitorType.cassandra)
 
 
     def __configureNetwork(self):
@@ -299,7 +302,7 @@ class IoTExperimentLinear(IoTExperiment):
                 # sleep for n seconds to get second reading to ignore spikes and try again
                 print ('cpu threshold has been reached, but I will wait collect readings over the next 30 seconds to make sure')
                 not_able_to_create = True
-                time.sleep (60)
+                time.sleep (30)
                 if self.monitor_to_check.hostCPUUsageMovingAverage < self.targetCPUUtilization:
                     print (str (self.monitor_to_check.MonitorType) + ' moving average usage is ' + str (self.monitor_to_check.hostCPUUsageMovingAverage) + '% I can continue, was only a cpu blip')
                     self.__generateTestCase()

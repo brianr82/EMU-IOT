@@ -117,13 +117,14 @@ class IoTMonitor:
                         'sensor_count': str(self.ActiveProducers),
                         'name': container.name,
                         'timestamp': b['read'],
-                        'cpu%': str(self.calculateCPUPercentUnix(b)),
+                        'container_cpu%': str(self.calculateCPUPercentUnix(b)),
                         'memory%': str(round(float(b['memory_stats']['usage']) / float(b['memory_stats']['limit']) * 100, 2)),
                         'net_receive': str(throughput['rx_delta']),
                         'net_send': str(throughput['tx_delta']),
                         'memory_rss%': str(round(float(b['memory_stats']['stats']['rss']) / float(b['memory_stats']['limit']) * 100, 2)),
                         'memory_active_anon%': str(round(float(b['memory_stats']['stats']['active_anon']) / float(b['memory_stats']['limit']) * 100,2)),
-                        'agg_cpu': str(self.hostCPUUsage),
+                        'host_cpu': str(self.hostCPUUsage),
+                        'host_moving_avg_cpu': str(self.hostCPUUsageMovingAverage),
                         }]
 
                     #self.append_experiment_reading_record(record)
@@ -145,7 +146,7 @@ class IoTMonitor:
             df = pd.DataFrame (self.hostCPUUsageReadings)
 
             #get the last element
-            moving_list = df.rolling (window=12).mean()
+            moving_list = df.rolling (window=6).mean()
             index = len (moving_list) - 1
             self.hostCPUUsageMovingAverage = round(moving_list.iloc[index][0],2)
             print ('............CPU Moving Average ' + str(self.hostCPUUsageMovingAverage))
@@ -230,14 +231,16 @@ class IoTMonitor:
                             dict_writer.writerow (value)
 
             # write host level stats
-            self.hostCPUUsage = round (aggregate_cpu, 2)  # return the total cpu usage for this monitor ie, this host
+
+
+            self.hostCPUUsage = round (aggregate_cpu, 2)
             self.hostCPUUsageReadings.append (self.hostCPUUsage)
 
             # calculate and update moving average
             df = pd.DataFrame (self.hostCPUUsageReadings)
 
             # get the last element
-            moving_list = df.rolling (window=12).mean ()
+            moving_list = df.rolling (window=6).mean ()
             index = len (moving_list) - 1
             self.hostCPUUsageMovingAverage = round (moving_list.iloc[index][0], 2)
             print ('............CPU Moving Average ' + str (self.hostCPUUsageMovingAverage))

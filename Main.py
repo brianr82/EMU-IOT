@@ -1,5 +1,5 @@
 from IoTExperimentLinear import *
-from IoTMonitorType import *
+
 
 import sys
 
@@ -15,11 +15,11 @@ IoTExperiment = IoTExperimentLinear()
 
 
 IoTExperiment.setExperimentName("Refactor_1")
-IoTExperiment.setApplicationToMonitor(IoTMonitorType.kafka)
+IoTExperiment.configureExperiment('mix')
 IoTExperiment.setTargetCPUUtilization(30)
 IoTExperiment.set_max_devices_on_a_producer_host(100)
 IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
-IoTExperiment.configureExperiment('temperature')
+
 IoTExperiment.run()
 
 
