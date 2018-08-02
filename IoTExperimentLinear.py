@@ -46,19 +46,19 @@ class IoTExperimentLinear(IoTExperiment):
         self.__executeWorkload()
         self.__cleanUp()
 
-    def configureExperiment(self,type):
+    def configureExperiment(self,experiment_type):
 
-        if type == 'temperature':
+        if experiment_type == 'temperature':
             self.temperature_sensors_per_test_case = 5
             self.camera_sensors_per_test_case = 0
             print('Experiment Set to temperature sensors only')
 
-        if type == 'camera':
+        if experiment_type == 'camera':
             self.temperature_sensors_per_test_case = 0
             self.camera_sensors_per_test_case = 5
             print('Experiment Set to camera sensors only')
 
-        if type == 'mix':
+        if experiment_type == 'mix':
             self.temperature_sensors_per_test_case = 5
             self.camera_sensors_per_test_case = 1
             print('Experiment Set to 1 camera + 5 temperature sensors')

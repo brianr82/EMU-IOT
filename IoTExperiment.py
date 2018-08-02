@@ -33,6 +33,10 @@ class IoTExperiment(object):
         pass
 
     @abstractmethod
+    def configureExperiment(self, experiment_type):
+        pass
+
+    @abstractmethod
     def __IoTNodeSetup(self):
         pass
 
