@@ -15,6 +15,7 @@ class IoTDeviceService(object):
     def removeVirtualIoTDevice(self, IoTLoadBalancer, MonitorManager):
         if len(self.IoTDeviceList)== 0:
             print ('No more devices to remove!')
+            return False
         else:
 
             # update all local lists
@@ -29,6 +30,7 @@ class IoTDeviceService(object):
 
             # update the monitor
             MonitorManager.updateActiveProducerCount (IoTLoadBalancer)
+            return True
 
 
     def incrementDeviceCounter(self):

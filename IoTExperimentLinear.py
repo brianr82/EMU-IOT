@@ -33,19 +33,25 @@ class IoTExperimentLinear(IoTExperiment):
 
 
         #test case configs
-        self.temperature_sensors_per_test_case = 0
-        self.camera_sensors_per_test_case = 0
+        #self.temperature_sensors_per_test_case = 0
+        #self.camera_sensors_per_test_case = 0
 
 
 
 
     def run(self):
+        self.__resetCounters()
         self.__configureNetwork()
         self.__configureMonitor()
         self.__IoTNodeSetup()
         self.__startMonitors()
         self.__executeWorkload()
         self.__cleanUp()
+
+    def __resetCounters(self):
+        self.TestCaseCounter = 0
+        self.current_active_producers = 0
+        self.target_active_producers = 0
 
     def configureExperiment(self,experiment_type):
 
@@ -355,7 +361,7 @@ class IoTExperimentLinear(IoTExperiment):
                 #    self.TestCaseCompleted == True
 
                 print('Current Active Producers '+str(self.current_active_producers))
-                print('Target Active Producers ') + str(self.target_active_producers)
+                print('Target Active Producers ' + str(self.target_active_producers))
                 print('Monitor Active Producers ' + str(self.monitor_to_check.ActiveProducers))
 
             if self.current_active_producers == self.target_active_producers:
@@ -388,7 +394,16 @@ class IoTExperimentLinear(IoTExperiment):
 
         # kill the receivers after the experiment
 
+
+        #self.IoTLinearLoadbalancer.remove_all_iot_devices ()
+        temperature_devices_to_remove = True
+        while temperature_devices_to_remove:
+            temperature_devices_to_remove = self.DeviceServiceTemperature.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+
+        camera_devices_to_remove = True
+        while camera_devices_to_remove:
+            camera_devices_to_remove = self.DeviceServiceCamera.removeVirtualIoTDevice(self.IoTLinearLoadbalancer,self.IoTLinearMonitorManager)
+
         self.IoTLinearLoadbalancer.remove_all_gateways ()
-        self.IoTLinearLoadbalancer.remove_all_iot_devices ()
 
         time.sleep (10)
