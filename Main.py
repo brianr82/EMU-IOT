@@ -9,10 +9,12 @@ import sys
 # docker build --no-cache=true -f latest/Dockerfile https://github.com/brianr82/node-red-docker.git -t brianr82/multinodered:latest
 
 search_method = 'Linear_'
-experiment_type = 'temperature'
+experiment_type = 'mix'
 
 experiment_number = 0
-
+target_cpu_utilization = 100
+max_devices_on_a_producer_host = 200
+max_devices_assigned_to_a_virtual_gateway = 50
 
 
 IoTExperiment = IoTExperimentLinear()
@@ -22,9 +24,9 @@ IoTExperiment = IoTExperimentLinear()
 experiment_number +=1
 IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
 IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
 IoTExperiment.run()
 
 
@@ -34,62 +36,9 @@ time.sleep(60)
 experiment_number +=1
 IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
 IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
-IoTExperiment.run()
-
-
-
-time.sleep(60)
-
-
-
-
-experiment_number +=1
-IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
-IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
-IoTExperiment.run()
-
-
-
-time.sleep(60)
-
-
-experiment_number +=1
-IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
-IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
-IoTExperiment.run()
-
-
-
-time.sleep(60)
-
-
-experiment_number +=1
-IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
-IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
-IoTExperiment.run()
-
-
-time.sleep(60)
-
-
-experiment_number +=1
-IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
-IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
 IoTExperiment.run()
 
 
@@ -102,9 +51,47 @@ time.sleep(60)
 experiment_number +=1
 IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
 IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
+IoTExperiment.run()
+
+
+
+time.sleep(60)
+
+
+experiment_number +=1
+IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
+IoTExperiment.configureExperiment(experiment_type)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
+IoTExperiment.run()
+
+
+
+time.sleep(60)
+
+
+experiment_number +=1
+IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
+IoTExperiment.configureExperiment(experiment_type)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
+IoTExperiment.run()
+
+
+time.sleep(60)
+
+
+experiment_number +=1
+IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
+IoTExperiment.configureExperiment(experiment_type)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
 IoTExperiment.run()
 
 
@@ -117,9 +104,9 @@ time.sleep(60)
 experiment_number +=1
 IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
 IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
 IoTExperiment.run()
 
 
@@ -132,9 +119,9 @@ time.sleep(60)
 experiment_number +=1
 IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
 IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
 IoTExperiment.run()
 
 
@@ -147,9 +134,24 @@ time.sleep(60)
 experiment_number +=1
 IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
 IoTExperiment.configureExperiment(experiment_type)
-IoTExperiment.setTargetCPUUtilization(60)
-IoTExperiment.set_max_devices_on_a_producer_host(200)
-IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(50)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
+IoTExperiment.run()
+
+
+
+time.sleep(60)
+
+
+
+
+experiment_number +=1
+IoTExperiment.setExperimentName(search_method+experiment_type+str(experiment_number))
+IoTExperiment.configureExperiment(experiment_type)
+IoTExperiment.setTargetCPUUtilization(target_cpu_utilization)
+IoTExperiment.set_max_devices_on_a_producer_host(max_devices_on_a_producer_host)
+IoTExperiment.set_max_devices_assigned_to_a_virtual_gateway(max_devices_assigned_to_a_virtual_gateway)
 IoTExperiment.run()
 
 

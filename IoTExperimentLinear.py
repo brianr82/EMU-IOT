@@ -47,6 +47,7 @@ class IoTExperimentLinear(IoTExperiment):
         self.__startMonitors()
         self.__executeWorkload()
         self.__cleanUp()
+        print ('Experiment Finished')
 
     def __resetCounters(self):
         self.TestCaseCounter = 0
@@ -61,6 +62,7 @@ class IoTExperimentLinear(IoTExperiment):
             print('Experiment Set to temperature sensors only')
             self.setApplicationToMonitor(IoTMonitorType.kafka)
 
+
         if experiment_type == 'camera':
             self.temperature_sensors_per_test_case = 0
             self.camera_sensors_per_test_case = 5
@@ -68,9 +70,9 @@ class IoTExperimentLinear(IoTExperiment):
             self.setApplicationToMonitor(IoTMonitorType.cassandra)
 
         if experiment_type == 'mix':
-            self.temperature_sensors_per_test_case = 5
+            self.temperature_sensors_per_test_case = 2
             self.camera_sensors_per_test_case = 1
-            print('Experiment Set to 1 camera + 5 temperature sensors')
+            print('Experiment Set to 1 camera + 2 temperature sensors')
             self.setApplicationToMonitor (IoTMonitorType.cassandra)
 
 
@@ -206,14 +208,14 @@ class IoTExperimentLinear(IoTExperiment):
         # MonitorManager.addMonitor(PiMonitor)
         # MonitorManager.addMonitor(ProducerMonitor)
         #MonitorManager.addMonitor (Spark_Monitor)
-        MonitorManager.addMonitor (KafkaMonitor)
+        #MonitorManager.addMonitor (KafkaMonitor)
         MonitorManager.addMonitor (Cassandra_Monitor)
 
         # add the threads
         # MonitorManager.addThread(Pi_thread)
         # MonitorManager.addThread(ProducerThread)
         #MonitorManager.addThread (Spark_Thread)
-        MonitorManager.addThread (Kafka_thread)
+        #MonitorManager.addThread (Kafka_thread)
         MonitorManager.addThread (Cassandra_Thread)
 
         print (
@@ -229,6 +231,8 @@ class IoTExperimentLinear(IoTExperiment):
         for monitor in self.IoTLinearMonitorManager.IoTMonitorList:
             if monitor.MonitorType == self.ApplicationToMonitor:
                 self.monitor_to_check = monitor
+                print(monitor.MonitorType)
+
 
 
     def __IoTNodeSetup(self):
@@ -294,7 +298,7 @@ class IoTExperimentLinear(IoTExperiment):
     def __startMonitors(self):
         print ('........................................................................Starting New Experiment Session')
         print ('..................................................................................Starting the monitors')
-        self.IoTLinearMonitorManager.startAllMonitors ()
+        self.IoTLinearMonitorManager.startAllMonitors()
         time.sleep (10)
 
 

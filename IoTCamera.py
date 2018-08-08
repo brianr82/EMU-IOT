@@ -10,6 +10,11 @@ from IoTDeviceType import *
 #                                                        'img_quality': self.image_quality, \
 #                                                        'delay': self.producer_device_delay}, \
 
+
+#import logging
+#logging.basicConfig(filename='example.log',level=logging.DEBUG)
+
+
 class IoTCamera(IoTDevice):
     def __init__(self,IoTDeviceID,IoTDeviceName,IoTProducerBinding,BoundIoTVirtualGateway,cassandra_ip,image_quality,producer_device_delay):
         IoTDevice.__init__ (self,IoTDeviceID,IoTDeviceName,IoTProducerBinding,BoundIoTVirtualGateway)
@@ -34,6 +39,6 @@ class IoTCamera(IoTDevice):
     def removeVirtualIoTSensor(self):
 
         existing_container = self.IoTProducerBinding.NodeDockerRemoteClient.containers.get(self.IoTDeviceName)
-        existing_container.kill()
-        existing_container.remove()
+        #existing_container.kill()
+        existing_container.remove(force=True)
         print ('Removed Container:\t' + existing_container.name)
