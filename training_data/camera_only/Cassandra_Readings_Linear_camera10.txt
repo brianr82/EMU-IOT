@@ -1,4 +1,3 @@
-----------------------------------------------------------------
 memory%	memory_active_anon%	host_moving_avg_cpu	memory_rss%	sensor_count	timestamp	net_send	host_cpu	net_receive	container_cpu%	name
 87.02	37.96	nan	37.96	0	2018-08-08T21:08:08.638794961Z	25002.687	0	1314.008	1.28	cassandra-001
 87.02	37.96	nan	37.96	3	2018-08-08T21:08:15.647205621Z	0.0	1.28	0.0	1.36	cassandra-001

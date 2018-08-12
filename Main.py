@@ -12,7 +12,7 @@ search_method = 'Linear_RegressionDatatest'
 experiment_type = 'temperature'
 
 experiment_number = 0
-target_cpu_utilization = 30
+target_cpu_utilization = 70
 max_devices_on_a_producer_host = 200
 max_devices_assigned_to_a_virtual_gateway = 50
 
