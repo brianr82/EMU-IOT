@@ -58,7 +58,7 @@ class IoTExperimentLinearRegression(IoTExperiment):
     def configureExperiment(self,experiment_type):
 
         if experiment_type == 'temperature':
-            self.temperature_sensors_per_test_case = int(round(Regression('training_data/kafka').getGenerateTestCase(self.targetCPUUtilization)))
+            self.temperature_sensors_per_test_case = int(round(Regression('training_data/temperature_only').getGenerateTestCase(self.targetCPUUtilization)))
             self.camera_sensors_per_test_case = 0
 
             print('Experiment Set to temperature sensors only')
@@ -67,14 +67,14 @@ class IoTExperimentLinearRegression(IoTExperiment):
 
         if experiment_type == 'camera':
             self.temperature_sensors_per_test_case = 0
-            self.camera_sensors_per_test_case = int(round(Regression('training_data/cassandra').getGenerateTestCase(self.targetCPUUtilization)))
+            self.camera_sensors_per_test_case = int(round(Regression('training_data/camera_only').getGenerateTestCase(self.targetCPUUtilization)))
 
             print('Experiment Set to camera sensors only')
             self.setApplicationToMonitor(IoTMonitorType.cassandra)
 
         if experiment_type == 'mix':
-            self.temperature_sensors_per_test_case = int(round(2//3 * Regression('training_data/cassandra').getGenerateTestCase(self.targetCPUUtilization)))
-            self.camera_sensors_per_test_case = int(round(1//3 * Regression('training_data/cassandra').getGenerateTestCase(self.targetCPUUtilization)))
+            self.temperature_sensors_per_test_case = int(round(2//3 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
+            self.camera_sensors_per_test_case = int(round(1//3 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
 
             print('Experiment Set to 1 camera + 2 temperature sensors')
             self.setApplicationToMonitor (IoTMonitorType.cassandra)
@@ -88,13 +88,13 @@ class IoTExperimentLinearRegression(IoTExperiment):
         iot_producer_manager_docker_ip_2 = '10.12.7.51'
         iot_producer_manager_docker_port_2 = '2375'
 
-        # configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
+        # configs for docker machine that will host the receiver gateway(Pi) that has a connection to temperature_only
         iot_gateway_manager_docker_ip_1 = '10.12.7.52'
         iot_gateway_manager_docker_port_1 = '2375'
         iot_gateway_manager_docker_ip_2 = '10.12.7.53'
         iot_gateway_manager_docker_port_2 = '2375'
 
-        # configs for docker machine that will host the kafka cluster
+        # configs for docker machine that will host the temperature_only cluster
         kafka_manager_docker_ip = '10.12.7.48'
         kafka_manager_docker_port = '2375'
         # configs for docker machine that will host the spark instances

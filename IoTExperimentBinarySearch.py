@@ -84,13 +84,13 @@ class IoTExperimentLinear(IoTExperiment):
         iot_producer_manager_docker_ip_2 = '10.12.7.51'
         iot_producer_manager_docker_port_2 = '2375'
 
-        # configs for docker machine that will host the receiver gateway(Pi) that has a connection to kafka
+        # configs for docker machine that will host the receiver gateway(Pi) that has a connection to temperature_only
         iot_gateway_manager_docker_ip_1 = '10.12.7.52'
         iot_gateway_manager_docker_port_1 = '2375'
         iot_gateway_manager_docker_ip_2 = '10.12.7.53'
         iot_gateway_manager_docker_port_2 = '2375'
 
-        # configs for docker machine that will host the kafka cluster
+        # configs for docker machine that will host the temperature_only cluster
         kafka_manager_docker_ip = '10.12.7.48'
         kafka_manager_docker_port = '2375'
         # configs for docker machine that will host the spark instances
