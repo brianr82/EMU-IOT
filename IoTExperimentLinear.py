@@ -187,19 +187,19 @@ class IoTExperimentLinear(IoTExperiment):
         print ('Starting monitor for: ' + self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Kafka').NodeName)
         KafkaMonitor = IoTMonitor (self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Kafka').NodeDockerRemoteClient,
                                    IoTMonitorType.kafka)
-        KafkaMonitor.create_new_result_file (directory + 'KafkaReadings_' + experiment_tag)
+        KafkaMonitor.create_new_result_file (directory + 'KafkaReadings_' + experiment_tag +'.txt')
         Kafka_thread = Thread (target=KafkaMonitor.getUpdatedStats)
 
         print ('Starting monitor for: ' + self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeName)
         Spark_Monitor = IoTMonitor (self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeDockerRemoteClient,
                                     IoTMonitorType.spark)
-        Spark_Monitor.create_new_result_file (directory + 'Spark_Readings_' + experiment_tag)
+        Spark_Monitor.create_new_result_file (directory + 'Spark_Readings_' + experiment_tag +'.txt')
         Spark_Thread = Thread (target=Spark_Monitor.getUpdatedStats)
 
         print ('Starting monitor for: ' + self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Cassandra').NodeName)
         Cassandra_Monitor = IoTMonitor (self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Cassandra').NodeDockerRemoteClient,
                                         IoTMonitorType.cassandra)
-        Cassandra_Monitor.create_new_result_file (directory + 'Cassandra_Readings_' + experiment_tag)
+        Cassandra_Monitor.create_new_result_file (directory + 'Cassandra_Readings_' + experiment_tag +'.txt')
         Cassandra_Thread = Thread (target=Cassandra_Monitor.getUpdatedStats)
 
         # create the monitor manager
@@ -208,14 +208,14 @@ class IoTExperimentLinear(IoTExperiment):
         # MonitorManager.addMonitor(PiMonitor)
         # MonitorManager.addMonitor(ProducerMonitor)
         #MonitorManager.addMonitor (Spark_Monitor)
-        #MonitorManager.addMonitor (KafkaMonitor)
+        MonitorManager.addMonitor (KafkaMonitor)
         MonitorManager.addMonitor (Cassandra_Monitor)
 
         # add the threads
         # MonitorManager.addThread(Pi_thread)
         # MonitorManager.addThread(ProducerThread)
         #MonitorManager.addThread (Spark_Thread)
-        #MonitorManager.addThread (Kafka_thread)
+        MonitorManager.addThread (Kafka_thread)
         MonitorManager.addThread (Cassandra_Thread)
 
         print (

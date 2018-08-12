@@ -261,8 +261,9 @@ class IoTMonitor:
 
     def create_new_result_file(self, filename):
         self.set_result_file_name(filename)
-        with open(self.get_result_file_name(), "w") as f:
-            f.write('----------------------------------------------------------------' + '\n')
+        #with open(self.get_result_file_name(), "w") as f:
+        #    f.write('----------------------------------------------------------------' + '\n')
+        f = open (self.get_result_file_name (), "w")
 
     def set_result_file_name(self, filename):
         self.resultFileName = filename
