@@ -1,2 +1,1 @@
-# Sensor-Manager
-An application to emulate IoT networks
+EMU-IOT - A Virtual Internet of Things Lab
