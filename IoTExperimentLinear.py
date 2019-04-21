@@ -79,25 +79,25 @@ class IoTExperimentLinear(IoTExperiment):
     def __configureNetwork(self):
 
         # configs for docker machine that will host the synthetic iot devices
-        iot_producer_manager_docker_ip_1 = '10.12.7.50'
+        iot_producer_manager_docker_ip_1 = '172.31.18.174'
         iot_producer_manager_docker_port_1 = '2375'
-        iot_producer_manager_docker_ip_2 = '10.12.7.51'
+        iot_producer_manager_docker_ip_2 = '172.31.22.58'
         iot_producer_manager_docker_port_2 = '2375'
 
         # configs for docker machine that will host the receiver gateway(Pi) that has a connection to temperature_only
-        iot_gateway_manager_docker_ip_1 = '10.12.7.52'
+        iot_gateway_manager_docker_ip_1 = '172.31.26.234'
         iot_gateway_manager_docker_port_1 = '2375'
-        iot_gateway_manager_docker_ip_2 = '10.12.7.53'
+        iot_gateway_manager_docker_ip_2 = '172.31.20.48'
         iot_gateway_manager_docker_port_2 = '2375'
 
         # configs for docker machine that will host the temperature_only cluster
-        kafka_manager_docker_ip = '10.12.7.48'
+        kafka_manager_docker_ip = '172.31.28.83'
         kafka_manager_docker_port = '2375'
         # configs for docker machine that will host the spark instances
-        spark_manager_docker_ip = '10.12.7.49'
+        spark_manager_docker_ip = '172.31.27.157'
         spark_manager_docker_port = '2375'
         # configs for docker machine that will host the assandra instances
-        cassandra_manager_docker_ip = '10.12.7.5'
+        cassandra_manager_docker_ip = '172.31.27.157'
         cassandra_manager_docker_port = '2375'
 
         # Create remote docker clients to manage simulation environment
@@ -190,6 +190,8 @@ class IoTExperimentLinear(IoTExperiment):
         KafkaMonitor.create_new_result_file (directory + 'KafkaReadings_' + experiment_tag +'.txt')
         Kafka_thread = Thread (target=KafkaMonitor.getUpdatedStats)
 
+        '''
+        
         print ('Starting monitor for: ' + self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeName)
         Spark_Monitor = IoTMonitor (self.IoTLinearLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeDockerRemoteClient,
                                     IoTMonitorType.spark)
@@ -202,6 +204,10 @@ class IoTExperimentLinear(IoTExperiment):
         Cassandra_Monitor.create_new_result_file (directory + 'Cassandra_Readings_' + experiment_tag +'.txt')
         Cassandra_Thread = Thread (target=Cassandra_Monitor.getUpdatedStats)
 
+
+        '''
+
+
         # create the monitor manager
         MonitorManager = IoTMonitorManager ()
         # add the monitors
@@ -209,14 +215,14 @@ class IoTExperimentLinear(IoTExperiment):
         # MonitorManager.addMonitor(ProducerMonitor)
         #MonitorManager.addMonitor (Spark_Monitor)
         MonitorManager.addMonitor (KafkaMonitor)
-        MonitorManager.addMonitor (Cassandra_Monitor)
+        #MonitorManager.addMonitor (Cassandra_Monitor)
 
         # add the threads
         # MonitorManager.addThread(Pi_thread)
         # MonitorManager.addThread(ProducerThread)
         #MonitorManager.addThread (Spark_Thread)
         MonitorManager.addThread (Kafka_thread)
-        MonitorManager.addThread (Cassandra_Thread)
+        #MonitorManager.addThread (Cassandra_Thread)
 
         print (
             '*********************************************************************************************************')
@@ -410,4 +416,4 @@ class IoTExperimentLinear(IoTExperiment):
 
         self.IoTLinearLoadbalancer.remove_all_gateways ()
 
-        time.sleep (10)
+        time.sleep(10)

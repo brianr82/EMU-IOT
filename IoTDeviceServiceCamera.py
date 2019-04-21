@@ -20,7 +20,7 @@ class IoTDeviceServiceCamera(IoTDeviceService):
         # virtual device options(i.e. the params passed to the docker container when its created)
         image_quality = 5
         producer_device_delay = 1
-        cassandra_ip = '10.12.7.5'
+        destination_sink_ip = '172.31.27.157'
 
 
         BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (IoTDeviceType.camera)
@@ -29,7 +29,7 @@ class IoTDeviceServiceCamera(IoTDeviceService):
 
         IoTDeviceName = destination_producer_host.NodeName + '_' + producer_prefix + str(BoundIoTVirtualGateway.gateway_app_port)
 
-        new_sensor = IoTCamera (IoTDeviceID, IoTDeviceName, IoTProducerBinding, BoundIoTVirtualGateway,cassandra_ip,image_quality, producer_device_delay)
+        new_sensor = IoTCamera (IoTDeviceID, IoTDeviceName, IoTProducerBinding, BoundIoTVirtualGateway, destination_sink_ip, image_quality, producer_device_delay)
         # add device to list
         self.IoTDeviceList.append (new_sensor)
         # Start the sensor
