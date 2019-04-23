@@ -20,7 +20,7 @@ class IoTDeviceServiceCamera(IoTDeviceService):
         # virtual device options(i.e. the params passed to the docker container when its created)
         image_quality = 5
         producer_device_delay = 1
-        destination_sink_ip = '172.31.27.157'
+        destination_sink_ip = '10.12.7.64'
 
 
         BoundIoTVirtualGateway = destination_producer_host.boundNode.getNextFreeVirtualGateway (IoTDeviceType.camera)

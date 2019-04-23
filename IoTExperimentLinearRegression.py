@@ -73,37 +73,37 @@ class IoTExperimentLinearRegression(IoTExperiment):
             self.setApplicationToMonitor(IoTMonitorType.cassandra)
 
         if experiment_type == 'mix':
-            self.temperature_sensors_per_test_case = int(round(2/3 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
+            self.temperature_sensors_per_test_case = int(round(9/10 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
             print('Number of temperature sensors: ' + str(self.temperature_sensors_per_test_case))
-            self.camera_sensors_per_test_case = int(round(1/3 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
-            print ('Number of camera sensors: ' + str (self.camera_sensors_per_test_case))
+            self.camera_sensors_per_test_case = int(round(1/10 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
+            print ('Number of camera sensors: ' + str(self.camera_sensors_per_test_case))
 
             print('Experiment Set to 1 camera + 2 temperature sensors')
-            self.setApplicationToMonitor (IoTMonitorType.cassandra)
+            self.setApplicationToMonitor(IoTMonitorType.kafka)
 
 
     def __configureNetwork(self):
 
         # configs for docker machine that will host the synthetic iot devices
-        iot_producer_manager_docker_ip_1 = '10.12.7.50'
+        iot_producer_manager_docker_ip_1 = '10.12.7.62'
         iot_producer_manager_docker_port_1 = '2375'
-        iot_producer_manager_docker_ip_2 = '10.12.7.51'
+        iot_producer_manager_docker_ip_2 = '10.12.7.63'
         iot_producer_manager_docker_port_2 = '2375'
 
         # configs for docker machine that will host the receiver gateway(Pi) that has a connection to temperature_only
-        iot_gateway_manager_docker_ip_1 = '10.12.7.52'
+        iot_gateway_manager_docker_ip_1 = '10.12.7.67'
         iot_gateway_manager_docker_port_1 = '2375'
-        iot_gateway_manager_docker_ip_2 = '10.12.7.53'
+        iot_gateway_manager_docker_ip_2 = '10.12.7.68'
         iot_gateway_manager_docker_port_2 = '2375'
 
         # configs for docker machine that will host the temperature_only cluster
-        kafka_manager_docker_ip = '10.12.7.48'
+        kafka_manager_docker_ip = '10.12.7.64'
         kafka_manager_docker_port = '2375'
         # configs for docker machine that will host the spark instances
-        spark_manager_docker_ip = '10.12.7.49'
+        spark_manager_docker_ip = '10.12.7.65'
         spark_manager_docker_port = '2375'
         # configs for docker machine that will host the assandra instances
-        cassandra_manager_docker_ip = '10.12.7.5'
+        cassandra_manager_docker_ip = '10.12.7.66'
         cassandra_manager_docker_port = '2375'
 
         # Create remote docker clients to manage simulation environment
@@ -196,17 +196,15 @@ class IoTExperimentLinearRegression(IoTExperiment):
         KafkaMonitor.create_new_result_file (directory + 'KafkaReadings_' + experiment_tag +'.txt')
         Kafka_thread = Thread (target=KafkaMonitor.getUpdatedStats)
 
-        print ('Starting monitor for: ' + self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeName)
-        Spark_Monitor = IoTMonitor (self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeDockerRemoteClient,
-                                    IoTMonitorType.spark)
-        Spark_Monitor.create_new_result_file (directory + 'Spark_Readings_' + experiment_tag +'.txt')
-        Spark_Thread = Thread (target=Spark_Monitor.getUpdatedStats)
+        #print ('Starting monitor for: ' + self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeName)
+        #Spark_Monitor = IoTMonitor (self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Spark').NodeDockerRemoteClient, IoTMonitorType.spark)
+        #Spark_Monitor.create_new_result_file (directory + 'Spark_Readings_' + experiment_tag +'.txt')
+        #Spark_Thread = Thread (target=Spark_Monitor.getUpdatedStats)
 
-        print ('Starting monitor for: ' + self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Cassandra').NodeName)
-        Cassandra_Monitor = IoTMonitor (self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Cassandra').NodeDockerRemoteClient,
-                                        IoTMonitorType.cassandra)
-        Cassandra_Monitor.create_new_result_file (directory + 'Cassandra_Readings_' + experiment_tag +'.txt')
-        Cassandra_Thread = Thread (target=Cassandra_Monitor.getUpdatedStats)
+        #print ('Starting monitor for: ' + self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Cassandra').NodeName)
+        #Cassandra_Monitor = IoTMonitor (self.IoTLinearRegressionLoadbalancer.parent_IoTNetwork.get_IoTNode ('Cassandra').NodeDockerRemoteClient, IoTMonitorType.cassandra)
+        #Cassandra_Monitor.create_new_result_file (directory + 'Cassandra_Readings_' + experiment_tag +'.txt')
+        #Cassandra_Thread = Thread (target=Cassandra_Monitor.getUpdatedStats)
 
         # create the monitor manager
         MonitorManager = IoTMonitorManager ()
@@ -215,14 +213,14 @@ class IoTExperimentLinearRegression(IoTExperiment):
         # MonitorManager.addMonitor(ProducerMonitor)
         #MonitorManager.addMonitor (Spark_Monitor)
         MonitorManager.addMonitor (KafkaMonitor)
-        MonitorManager.addMonitor (Cassandra_Monitor)
+        #MonitorManager.addMonitor (Cassandra_Monitor)
 
         # add the threads
         # MonitorManager.addThread(Pi_thread)
         # MonitorManager.addThread(ProducerThread)
         #MonitorManager.addThread (Spark_Thread)
         MonitorManager.addThread (Kafka_thread)
-        MonitorManager.addThread (Cassandra_Thread)
+        #MonitorManager.addThread (Cassandra_Thread)
 
         print (
             '*********************************************************************************************************')

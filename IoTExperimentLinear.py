@@ -70,34 +70,34 @@ class IoTExperimentLinear(IoTExperiment):
             self.setApplicationToMonitor(IoTMonitorType.cassandra)
 
         if experiment_type == 'mix':
-            self.temperature_sensors_per_test_case = 2
+            self.temperature_sensors_per_test_case = 10
             self.camera_sensors_per_test_case = 1
-            print('Experiment Set to 1 camera + 2 temperature sensors')
-            self.setApplicationToMonitor (IoTMonitorType.cassandra)
+            print('Experiment Set to 1 camera + 10 temperature sensors')
+            self.setApplicationToMonitor(IoTMonitorType.kafka)
 
 
     def __configureNetwork(self):
 
         # configs for docker machine that will host the synthetic iot devices
-        iot_producer_manager_docker_ip_1 = '172.31.18.174'
+        iot_producer_manager_docker_ip_1 = '10.12.7.62'
         iot_producer_manager_docker_port_1 = '2375'
-        iot_producer_manager_docker_ip_2 = '172.31.22.58'
+        iot_producer_manager_docker_ip_2 = '10.12.7.63'
         iot_producer_manager_docker_port_2 = '2375'
 
         # configs for docker machine that will host the receiver gateway(Pi) that has a connection to temperature_only
-        iot_gateway_manager_docker_ip_1 = '172.31.26.234'
+        iot_gateway_manager_docker_ip_1 = '10.12.7.67'
         iot_gateway_manager_docker_port_1 = '2375'
-        iot_gateway_manager_docker_ip_2 = '172.31.20.48'
+        iot_gateway_manager_docker_ip_2 = '10.12.7.68'
         iot_gateway_manager_docker_port_2 = '2375'
 
         # configs for docker machine that will host the temperature_only cluster
-        kafka_manager_docker_ip = '172.31.28.83'
+        kafka_manager_docker_ip = '10.12.7.64'
         kafka_manager_docker_port = '2375'
         # configs for docker machine that will host the spark instances
-        spark_manager_docker_ip = '172.31.27.157'
+        spark_manager_docker_ip = '10.12.7.65'
         spark_manager_docker_port = '2375'
-        # configs for docker machine that will host the assandra instances
-        cassandra_manager_docker_ip = '172.31.27.157'
+        # configs for docker machine that will host the cassandra instances
+        cassandra_manager_docker_ip = '10.12.7.66'
         cassandra_manager_docker_port = '2375'
 
         # Create remote docker clients to manage simulation environment
