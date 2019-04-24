@@ -73,12 +73,12 @@ class IoTExperimentLinearRegression(IoTExperiment):
             self.setApplicationToMonitor(IoTMonitorType.cassandra)
 
         if experiment_type == 'mix':
-            self.temperature_sensors_per_test_case = int(round(9/10 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
+            self.temperature_sensors_per_test_case = int(round(10/11 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
             print('Number of temperature sensors: ' + str(self.temperature_sensors_per_test_case))
-            self.camera_sensors_per_test_case = int(round(1/10 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
+            self.camera_sensors_per_test_case = int(round(1/11 * Regression('training_data/mix').getGenerateTestCase(self.targetCPUUtilization)))
             print ('Number of camera sensors: ' + str(self.camera_sensors_per_test_case))
 
-            print('Experiment Set to 1 camera + 2 temperature sensors')
+            print('Experiment Set to 1 camera + 10 temperature sensors')
             self.setApplicationToMonitor(IoTMonitorType.kafka)
 
 

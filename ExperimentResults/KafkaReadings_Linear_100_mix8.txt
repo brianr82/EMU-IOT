@@ -1,3 +1,0 @@
-sensor_count	memory%	container_cpu%	timestamp	host_moving_avg_cpu	net_receive	memory_rss%	name	net_send	memory_active_anon%	host_cpu
-2	66.05	2.8	2019-04-23T13:21:21.220497918Z	nan	249361731.263	2.51	kafka-001	2257130.6	2.51	0
-3	66.01	2.12	2019-04-23T13:21:28.232986819Z	nan	37.148	2.47	kafka-001	27.108	2.47	2.8
